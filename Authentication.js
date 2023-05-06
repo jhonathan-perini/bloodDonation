@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "fire
 import {auth} from "./firebaseConfig";
 import verifyErrorCode from "./firebaseError";
 
-export default function Authentication(){
+export default function Authentication({navigation}){
     const [email, onChangeEmail] = useState('');
     const [password, onChangePassword] = useState('');
 
@@ -44,9 +44,10 @@ export default function Authentication(){
     return (
 
         <SafeAreaView style={stylesAuth.SafeAreaWidth}>
-            <Image source={lock} style={stylesAuth.LockImage}/>
-            <Text style={stylesAuth.FormWelcomeText}>Bem-vindo</Text>
+
             <View style={stylesAuth.FormContainer}>
+                <Image source={lock} style={stylesAuth.LockImage}/>
+                <Text style={stylesAuth.FormWelcomeText}>Bem-vindo</Text>
                 <TextInput
                     theme={{ colors: { onSurface: "black"}}} mode="outlined"
                     style={stylesAuth.TextInputStyle}
@@ -104,7 +105,7 @@ export default function Authentication(){
                 />
                 <Text style={stylesAuth.RegisterLabel}>Quer ser um parceiro?</Text>
                 <TouchableOpacity
-                    onPress={registerUser}
+                    onPress={() => navigation.navigate("AuthPartner")}
                     color={"#841584"}
                     style={stylesAuth.PartnerButton}
                 >
@@ -127,20 +128,21 @@ export const stylesAuth = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#00000010",
         color: "#3d3d3d",
-        width: '60%'
+        width: '80%'
     },
     SafeAreaWidth: {
       width: '100%',
         backgroundColor: 'rgba(255,68,68,0.07)',
         height: "100%",
         display: 'flex',
+        justifyContent: 'center'
 
     },
     LoginButton: {
         backgroundColor: "rgba(255,68,68,0.8)",
         borderRadius: 10,
         padding: 12,
-        width: '40%',
+        width: '60%',
         marginTop: 10
 
     },
@@ -148,7 +150,7 @@ export const stylesAuth = StyleSheet.create({
         backgroundColor: "rgb(89,89,89)",
         borderRadius: 10,
         padding: 12,
-        width: '40%',
+        width: '60%',
         marginTop: 10
 
     },
@@ -156,7 +158,7 @@ export const stylesAuth = StyleSheet.create({
         backgroundColor: "#FFF",
         borderRadius: 10,
         padding: 12,
-        width: '40%',
+        width: '60%',
         marginTop: 10,
         borderWidth: 1,
         borderColor: "rgba(255,68,68,0.23)"
@@ -191,20 +193,23 @@ export const stylesAuth = StyleSheet.create({
     FormContainer:{
         display: 'flex',
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: 'rgba(255,255,255,0.47)',
+        marginHorizontal: 25,
+        borderRadius: 30,
+        paddingVertical: 30
 
     },
     FormWelcomeText: {
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: 26,
         margin: 20,
         fontWeight: 'bold'
     },
     LockImage:{
-        width: 120,
-        height: 120,
+        width: 110,
+        height: 110,
         alignSelf: "center",
-        marginBottom: 10,
-        marginTop: '10%'
+
     }
 });

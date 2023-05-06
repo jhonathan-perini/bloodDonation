@@ -13,6 +13,7 @@ import { TransitionPresets } from '@react-navigation/stack';
 import {Tabs2} from './TabNavigator'
 import {useFonts} from "expo-font";
 import Profile from "./Profile";
+import PartnerRegistration from "./PartnerRegistrarion";
 
 const Stack = createNativeStackNavigator();
 
@@ -35,7 +36,11 @@ export default function App() {
           <NavigationContainer>
             <Stack.Navigator   >
               {user ?  ( <Stack.Screen name="Home" options={{headerShown: false}}  component={Tabs2} /> ):
-                  <Stack.Screen  name="Auth" options={{headerShown: false, ...TransitionPresets.ModalTransition}} component={Auth} />
+                  <>
+                    <Stack.Screen  name="Auth" options={{headerShown: false, ...TransitionPresets.ModalTransition}} component={Auth} />
+                    <Stack.Screen  name="AuthPartner" options={{headerShown: false}} component={PartnerRegistration} />
+
+                  </>
               }
               <Stack.Screen name="Profile"  options={{headerShown: true, title: 'Meus dados'}}  component={Profile} />
             </Stack.Navigator>
