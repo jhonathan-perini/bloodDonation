@@ -20,6 +20,7 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [fontsLoaded] = useFonts({
     'SFLight': require('./assets/fonts/SF-Pro-Rounded-Light.otf'),
+    'SFRegular': require('./assets/fonts/SF-Pro-Rounded-Regular.otf'),
   });
   auth.onAuthStateChanged((user) => {
     if (user) {

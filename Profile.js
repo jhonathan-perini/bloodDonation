@@ -2,12 +2,7 @@ import {Text, View, TextInput, StyleSheet, TouchableOpacity, Image} from "react-
 import React, {useRef, useState} from "react";
 import {stylesAuth} from "./Authentication";
 import {auth} from "./firebaseConfig";
-
-import {DefaultTheme, Provider, RadioButton} from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {Dropdown} from "react-native-material-dropdown-v2-fixed";
-import {Picker} from "@react-native-picker/picker";
 import bloodA from './assets/blood-drop.png'
 import bloodO from './assets/blood-type-2.png'
 import bloodFill from './assets/blood-type-o.png'
@@ -17,7 +12,6 @@ import bloodFillAB from './assets/blood-type-ab-white.png'
 import bloodB from './assets/blood-type-b-2.png'
 import bloodAB from './assets/blood-type-ab-2.png'
 import rhPositive from './assets/blood-rh-positive.png'
-import rhPositiveWhite from './assets/blood-rh-positive-3.png'
 import rhNegative from './assets/blood-rh-negative.png'
 import rhNegativeWhite from './assets/blood-rh-negative-2.png'
 

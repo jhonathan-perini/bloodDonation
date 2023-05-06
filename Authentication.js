@@ -83,13 +83,32 @@ export default function Authentication(){
                         marginBottom: 10,
                     }}
                 />
-
+                <Text style={stylesAuth.RegisterLabel}>Ainda não faz parte?</Text>
+                <Text style={stylesAuth.RegisterLabel2}>Preencha os campos acima e clique em registrar.</Text>
                 <TouchableOpacity
                    onPress={registerUser}
                     color={"#841584"}
                     style={stylesAuth.RegisterButton}
                 >
                     <Text style={stylesAuth.RegisterText}>Registrar</Text>
+                </TouchableOpacity>
+                <View
+                    style={{
+                        borderBottomColor: 'black',
+                        borderBottomWidth: StyleSheet.hairlineWidth,
+                        alignSelf:'center',
+                        width: '35%',
+                        marginTop: 20,
+                        marginBottom: 10,
+                    }}
+                />
+                <Text style={stylesAuth.RegisterLabel}>Quer ser um parceiro?</Text>
+                <TouchableOpacity
+                    onPress={registerUser}
+                    color={"#841584"}
+                    style={stylesAuth.PartnerButton}
+                >
+                    <Text style={stylesAuth.LoginText}>Seja um parceiro</Text>
                 </TouchableOpacity>
             </View>
 
@@ -125,6 +144,14 @@ export const stylesAuth = StyleSheet.create({
         marginTop: 10
 
     },
+    PartnerButton: {
+        backgroundColor: "rgb(89,89,89)",
+        borderRadius: 10,
+        padding: 12,
+        width: '40%',
+        marginTop: 10
+
+    },
     RegisterButton: {
         backgroundColor: "#FFF",
         borderRadius: 10,
@@ -145,6 +172,22 @@ export const stylesAuth = StyleSheet.create({
         textAlign: "center",
         fontWeight: "bold"
     },
+    RegisterLabel: {
+        color: "#282828",
+        textAlign: "center",
+        fontWeight: "bold",
+
+        width: '80%',
+        marginBottom: 10
+
+    },
+    RegisterLabel2: {
+        color: "#282828",
+        textAlign: "center",
+        width: '80%',
+        lineHeight: 20
+
+    },
     FormContainer:{
         display: 'flex',
         justifyContent: "center",
@@ -162,6 +205,6 @@ export const stylesAuth = StyleSheet.create({
         height: 120,
         alignSelf: "center",
         marginBottom: 10,
-        marginTop: '25%'
+        marginTop: '10%'
     }
 });
