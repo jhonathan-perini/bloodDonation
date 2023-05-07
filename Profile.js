@@ -100,7 +100,7 @@ export default function Profile(){
             />
             {!userType?.cnpj && <View style={{
                 display: 'flex',
-                alignSelf: 'start',
+
                 flexDirection: 'row',
                 marginVertical: 10,
                 marginHorizontal: 35
@@ -135,7 +135,7 @@ export default function Profile(){
             </View>}
             {!userType?.cnpj && <View style={{
                 display: 'flex',
-                alignSelf: 'start',
+
                 flexDirection: 'row',
                 marginVertical: 10,
                 marginHorizontal: 35
@@ -197,7 +197,7 @@ export default function Profile(){
             </View>}
             {type && <View style={{
                 display: 'flex',
-                alignSelf: 'start',
+
                 flexDirection: 'row',
                 marginVertical: 10,
                 marginHorizontal: 35
