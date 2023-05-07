@@ -5,10 +5,20 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {Text} from "react-native";
 import Donations from './Donations'
 import Locals from "./Locals";
+import {useQuery} from "react-query";
+import {auth} from "./firebaseConfig";
+import api from "./api";
 const Tab = createBottomTabNavigator();
 
 
 export function Tabs2(){
+
+    const {data: user} = useQuery(["USER_TYPE"], async() => {
+        if(auth.currentUser?.email) {
+            const response = await api.get(`/find-user/${auth.currentUser.email}` )
+            return response.data
+        }
+    })
     return (
         <Tab.Navigator>
             <Tab.Screen name="Start" component={Home} options={{
@@ -17,9 +27,9 @@ export function Tabs2(){
                 ),
                 tabBarActiveTintColor: 'tomato'
             }} />
-            <Tab.Screen name="Doações" component={Donations} options={{
+            <Tab.Screen name={user?.cnpj ? "Estoque" : "Doações"} component={Donations} options={{
                 tabBarIcon: ({ color, size }) => (
-                    <MaterialCommunityIcons name="blood-bag" color={color} size={size} />
+                    <MaterialCommunityIcons name={user?.cnpj ? "blood-bag" : "hand-heart-outline"} color={color} size={size} />
                 ),
                 tabBarActiveTintColor: 'tomato'
             }} />

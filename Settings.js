@@ -1,12 +1,18 @@
-import {Text, FlatList, StyleSheet, TouchableOpacity, Pressable} from "react-native";
+import {Text, FlatList, StyleSheet, TouchableOpacity, Pressable, ActivityIndicator} from "react-native";
 import {auth} from "./firebaseConfig";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {useFonts} from "expo-font";
+import React, {useState} from "react";
+import Overlay from "./Overlay";
 
 export default function Settings({navigation}){
-
+const [isLoading, setIsLoading] = useState(false)
     function logOut(){
-        auth.signOut()
+    setIsLoading(true)
+        auth.signOut().then(res => setIsLoading(false)).catch(err => {
+            alert(JSON.stringify(err))
+            setIsLoading(false)
+        })
     }
 
     function navigate(page){
@@ -14,6 +20,8 @@ export default function Settings({navigation}){
     }
 
     return (
+        <>
+
         <FlatList style={styles.back}
             data={[
                 {key: 'Meus dados', icon: 'account', page: 'Profile' },
@@ -39,6 +47,7 @@ export default function Settings({navigation}){
                 )
             }}
         />
+        </>
     )
 }
 

@@ -15,3 +15,10 @@ export async function findPartner(req, res) {
     res.status(200).send(response)
 
 }
+
+export async function findUser(req, res) {
+    const email = req.params.id.trim()
+    const response =  await USERS_COLLECTION.findOne({email})
+    res.status(200).send(response)
+
+}

@@ -14,6 +14,7 @@ import bloodAB from './assets/blood-type-ab-2.png'
 import rhPositive from './assets/blood-rh-positive.png'
 import rhNegative from './assets/blood-rh-negative.png'
 import rhNegativeWhite from './assets/blood-rh-negative-2.png'
+import {useQueryClient} from "react-query";
 
 
 export default function Profile(){
@@ -24,7 +25,8 @@ export default function Profile(){
     const [type, setType] = useState('');
     const [rh, setRh] = useState('');
     const pickerRef = useRef();
-
+    const client = useQueryClient()
+    const userType = client.getQueryData(['USER_TYPE'])
     function open() {
         pickerRef.current.focus();
     }
@@ -76,7 +78,7 @@ export default function Profile(){
                     backgroundColor: "#00000010",
                     color: "#3d3d3d",
                     width: '80%'}}
-                placeholder={"Seu nome"}
+                placeholder={userType?.cnpj ? "Nome da entidade" : "Seu nome"}
                 placeholderTextColor={"#00000050"}
             />
             <TextInput
@@ -91,51 +93,108 @@ export default function Profile(){
             <TextInput
                 theme={{ colors: { onSurface: "black"}}} mode="outlined"
                 style={style.Button}
-                placeholder={"Seu CPF"}
+                placeholder={userType?.cnpj ? 'Seu CNPJ' : "Seu CPF"}
                 placeholderTextColor={"#00000050"}
+                value={userType?.cnpj ? userType?.cnpj : ""}
+                editable={!userType?.cnpj}
             />
-            <View style={{display: 'flex', alignSelf: 'start', flexDirection: 'row', marginVertical: 10, marginHorizontal: 35}}>
+            {!userType?.cnpj && <View style={{
+                display: 'flex',
+                alignSelf: 'start',
+                flexDirection: 'row',
+                marginVertical: 10,
+                marginHorizontal: 35
+            }}>
 
                 <TouchableOpacity
                     onPress={() => setChecked('female')}
-                style={{display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: checked === 'female' ? "#ababab" : 'white', borderRadius: 10, padding: 10 }}>
-                    <Text style={{ color: checked === 'female' ? "white" : 'black'}}>Feminino</Text>
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: checked === 'female' ? "#ababab" : 'white',
+                        borderRadius: 10,
+                        padding: 10
+                    }}>
+                    <Text style={{color: checked === 'female' ? "white" : 'black'}}>Feminino</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => setChecked('male')}
-                    style={{display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: checked === 'male' ? "#ababab" : 'white', borderRadius: 10, padding: 10,
-                   }}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: checked === 'male' ? "#ababab" : 'white',
+                        borderRadius: 10,
+                        padding: 10,
+                    }}
                 >
-                    <Text style={{ color: checked === 'male' ? "white" : 'black'}}>Masculino</Text>
+                    <Text style={{color: checked === 'male' ? "white" : 'black'}}>Masculino</Text>
                 </TouchableOpacity>
 
-            </View>
-            <View style={{display: 'flex', alignSelf: 'start', flexDirection: 'row', marginVertical: 10, marginHorizontal: 35}}>
+            </View>}
+            {!userType?.cnpj && <View style={{
+                display: 'flex',
+                alignSelf: 'start',
+                flexDirection: 'row',
+                marginVertical: 10,
+                marginHorizontal: 35
+            }}>
 
                 <TouchableOpacity
                     onPress={() => setType('a')}
-                    style={{marginRight: 10, display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: type === 'a' ? "rgba(255,68,68,0.8)" : 'white', borderRadius: 10, padding: 5 }}>
-                    <Image source={type === 'a' ? bloodFillA :bloodA} style={{width: 30, height: 30}} />
+                    style={{
+                        marginRight: 10,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: type === 'a' ? "rgba(255,68,68,0.8)" : 'white',
+                        borderRadius: 10,
+                        padding: 5
+                    }}>
+                    <Image source={type === 'a' ? bloodFillA : bloodA} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => setType('b')}
-                    style={{marginRight: 10, display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: type === 'b' ? "rgba(255,68,68,0.8)" : 'white', borderRadius: 10, padding: 5 }}>
-                    <Image source={type === 'b' ? bloodBFill : bloodB} style={{width: 30, height: 30}} />
+                    style={{
+                        marginRight: 10,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: type === 'b' ? "rgba(255,68,68,0.8)" : 'white',
+                        borderRadius: 10,
+                        padding: 5
+                    }}>
+                    <Image source={type === 'b' ? bloodBFill : bloodB} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => setType('o')}
-                    style={{marginRight: 10, display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: type === 'o' ? "rgba(255,68,68,0.8)" : 'white', borderRadius: 10, padding: 5 }}>
-                    <Image source={type === 'o' ? bloodFill : bloodO} style={{width: 30, height: 30}} />
+                    style={{
+                        marginRight: 10,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: type === 'o' ? "rgba(255,68,68,0.8)" : 'white',
+                        borderRadius: 10,
+                        padding: 5
+                    }}>
+                    <Image source={type === 'o' ? bloodFill : bloodO} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => setType('ab')}
-                    style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: type === 'ab' ? "rgba(255,68,68,0.8)" : 'white', borderRadius: 10, padding: 5 }}>
-                    <Image source={type === 'ab' ? bloodFillAB : bloodAB} style={{width: 30, height: 30}} />
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: type === 'ab' ? "rgba(255,68,68,0.8)" : 'white',
+                        borderRadius: 10,
+                        padding: 5
+                    }}>
+                    <Image source={type === 'ab' ? bloodFillAB : bloodAB} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
 
 
-
-            </View>
+            </View>}
             {type && <View style={{
                 display: 'flex',
                 alignSelf: 'start',
