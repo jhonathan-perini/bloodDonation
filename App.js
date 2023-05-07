@@ -14,7 +14,9 @@ import {Tabs2} from './TabNavigator'
 import {useFonts} from "expo-font";
 import Profile from "./Profile";
 import PartnerRegistration from "./PartnerRegistrarion";
+import {QueryClient, QueryClientProvider} from "react-query";
 
+const queryClient = new QueryClient()
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -22,6 +24,7 @@ export default function App() {
   const [fontsLoaded] = useFonts({
     'SFLight': require('./assets/fonts/SF-Pro-Rounded-Light.otf'),
     'SFRegular': require('./assets/fonts/SF-Pro-Rounded-Regular.otf'),
+    'SFBold': require('./assets/fonts/SF-Pro-Rounded-Bold.otf'),
   });
   auth.onAuthStateChanged((user) => {
     if (user) {
@@ -33,18 +36,20 @@ export default function App() {
 
 
   return (
+      <QueryClientProvider client={queryClient}>
           <NavigationContainer>
             <Stack.Navigator   >
               {user ?  ( <Stack.Screen name="Home" options={{headerShown: false}}  component={Tabs2} /> ):
                   <>
                     <Stack.Screen  name="Auth" options={{headerShown: false, ...TransitionPresets.ModalTransition}} component={Auth} />
-                    <Stack.Screen  name="AuthPartner" options={{headerShown: false}} component={PartnerRegistration} />
+                    <Stack.Screen  name="AuthPartner" options={{headerTransparent: true, headerTitle: ''}} component={PartnerRegistration} />
 
                   </>
               }
               <Stack.Screen name="Profile"  options={{headerShown: true, title: 'Meus dados'}}  component={Profile} />
             </Stack.Navigator>
           </NavigationContainer>
+      </QueryClientProvider>
   );
 }
 

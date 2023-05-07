@@ -17,7 +17,7 @@ export default function Settings({navigation}){
         <FlatList style={styles.back}
             data={[
                 {key: 'Meus dados', icon: 'account', page: 'Profile' },
-                {key: 'Notificações', icon: 'bell', page: 2},
+                // {key: 'Notificações', icon: 'bell', page: 2},
                 {key: 'Sair', icon: 'logout', action: logOut},
             ]}
             renderItem={({item}) => {

@@ -1,10 +1,23 @@
 import React, {useState} from 'react';
-import {SafeAreaView, StyleSheet, TextInput, Text, TouchableOpacity, View, Image} from 'react-native';
+import {
+    SafeAreaView,
+    StyleSheet,
+    TextInput,
+    Text,
+    TouchableOpacity,
+    View,
+    Image,
+    ActivityIndicator
+} from 'react-native';
 import lock from './assets/locks.png'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from "./firebaseConfig";
 import verifyErrorCode from "./firebaseError";
-
+import SwitchSelector from "react-native-switch-selector";
+import blood from './assets/blood-donor.png'
+import hospital from './assets/hospital.png'
+import Overlay from "./Overlay";
+import api from "./api";
 export default function Authentication({navigation}){
     const [email, onChangeEmail] = useState('');
     const [password, onChangePassword] = useState('');
@@ -24,38 +37,87 @@ export default function Authentication({navigation}){
                 // ..
             });
     }
-
+    const [isLoading, setIsLoading] = useState(false)
+    const [cnpj, setCnpj] = useState('')
     function logIn(){
-        signInWithEmailAndPassword(auth, email.toLowerCase(), password).then((userCredential) => {
-            // Signed in
-            let user = userCredential.user;
-            console.log(user)
 
-            // ...
-        }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            alert(verifyErrorCode(errorCode))
-            // ..
-        });
+        setIsLoading(true)
+        if(userType === 'partner' ){
+
+            api.get(`/partner/${cnpj}`).then(res =>{
+                if(res.data.hasOwnProperty('email')){
+                    signInWithEmailAndPassword(auth, res.data.email, password).then((userCredential) => {
+                        // Signed in
+                        let user = userCredential.user;
+                        setIsLoading(false)
+
+                        // ...
+                    }).catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        alert(verifyErrorCode(errorCode))
+                        setIsLoading(false)
+                        // ..
+                    });
+                } else {
+                    alert('CNPJ não encontrado.')
+                    setIsLoading(false)
+                }
+
+            }).catch(err => {
+                    setIsLoading(false)
+
+            })
+        } else {
+            signInWithEmailAndPassword(auth, email.toLowerCase(), password).then((userCredential) => {
+                // Signed in
+                let user = userCredential.user;
+                setIsLoading(false)
+
+                // ...
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(verifyErrorCode(errorCode))
+                setIsLoading(false)
+                // ..
+            });
+        }
+
     }
+const [userType, setUserType] = useState('donor')
+    const options = [
+        { label: 'Doador', value: 'donor', imageIcon: blood },
+        { label: 'Parceiro', value: 'partner', imageIcon: hospital },
 
-
+    ];
     return (
-
+<>
+    {isLoading && <Overlay/>}
         <SafeAreaView style={stylesAuth.SafeAreaWidth}>
-
+            {isLoading &&  <ActivityIndicator size="large" style={{position: 'absolute', alignSelf:'center', zIndex: 3}} color="#000" />}
             <View style={stylesAuth.FormContainer}>
                 <Image source={lock} style={stylesAuth.LockImage}/>
                 <Text style={stylesAuth.FormWelcomeText}>Bem-vindo</Text>
-                <TextInput
+                <SwitchSelector textColor={"rgba(255,68,68,0.8)"} initial={0}  selectedColor={'white'} buttonColor={"rgba(255,68,68,0.8)"} fontSize={14} animationDuration={200}  height={30} options={options} style={{width: '80%'}}  onPress={value => setUserType(value)} />
+
+
+                {userType === 'partner' ? <TextInput
+                    theme={{colors: {onSurface: "black"}}} mode="outlined"
+                    style={stylesAuth.TextInputStyle}
+                    onChangeText={setCnpj}
+                    value={cnpj}
+                    placeholder={"Seu CNPJ"}
+                    placeholderTextColor={"#00000050"}
+                    inputMode = 'numeric'
+                /> :  <TextInput
                     theme={{ colors: { onSurface: "black"}}} mode="outlined"
                     style={stylesAuth.TextInputStyle}
                     onChangeText={onChangeEmail}
                     value={email.toLowerCase()}
                     placeholder={"Seu email"}
                     placeholderTextColor={"#00000050"}
-                />
+                />}
                 <TextInput
                     style={stylesAuth.TextInputStyle}
                     onChangeText={onChangePassword}
@@ -64,6 +126,13 @@ export default function Authentication({navigation}){
                     secureTextEntry={true}
                     placeholderTextColor={"#00000050"}
                 />
+                {/*<TouchableOpacity*/}
+                {/*    color={"#841584"}*/}
+                {/*    style={{alignSelf: 'flex-end', marginRight:  '10%'}}*/}
+                {/*    onPress={logIn}*/}
+                {/*>*/}
+                {/*    <Text style={[stylesAuth.LoginText, {color: 'black'}]}>Sou parceiro</Text>*/}
+                {/*</TouchableOpacity>*/}
                 <TouchableOpacity
                     color={"#841584"}
                     style={stylesAuth.LoginButton}
@@ -116,19 +185,22 @@ export default function Authentication({navigation}){
 
 
         </SafeAreaView>
+</>
     )
 }
 
 export const stylesAuth = StyleSheet.create({
     TextInputStyle: {
         height: 50,
-        margin: 12,
+        marginTop: 8,
+        marginBottom: 2,
         borderWidth: 0,
         padding: 10,
         borderRadius: 10,
         backgroundColor: "#00000010",
         color: "#3d3d3d",
-        width: '80%'
+        width: '80%',
+        fontFamily: 'SFRegular'
     },
     SafeAreaWidth: {
       width: '100%',
@@ -151,7 +223,7 @@ export const stylesAuth = StyleSheet.create({
         borderRadius: 10,
         padding: 12,
         width: '60%',
-        marginTop: 10
+
 
     },
     RegisterButton: {
@@ -167,18 +239,17 @@ export const stylesAuth = StyleSheet.create({
     LoginText: {
         color: "#FFF",
         textAlign: "center",
-        fontWeight: "bold"
+        fontFamily: 'SFBold'
     },
     RegisterText: {
         color: "#FF4444",
         textAlign: "center",
-        fontWeight: "bold"
+        fontFamily: 'SFBold'
     },
     RegisterLabel: {
         color: "#282828",
         textAlign: "center",
-        fontWeight: "bold",
-
+        fontFamily: 'SFBold',
         width: '80%',
         marginBottom: 10
 
@@ -187,7 +258,8 @@ export const stylesAuth = StyleSheet.create({
         color: "#282828",
         textAlign: "center",
         width: '80%',
-        lineHeight: 20
+        lineHeight: 20,
+        fontFamily: 'SFRegular'
 
     },
     FormContainer:{
@@ -204,7 +276,7 @@ export const stylesAuth = StyleSheet.create({
         textAlign: 'center',
         fontSize: 26,
         margin: 20,
-        fontWeight: 'bold'
+        fontFamily: 'SFBold'
     },
     LockImage:{
         width: 110,

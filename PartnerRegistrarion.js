@@ -1,57 +1,170 @@
 import {stylesAuth} from "./Authentication";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import React, {useState} from "react";
-
+import hands from "./assets/join-our-team.png";
+import {cnpjValidation} from "./ValidatorCNPJ";
+import CustomInput from "./CustomInput";
+import isEmail from 'validator/lib/isEmail';
+import {addDoc, collection} from "firebase/firestore";
+import {auth, db} from "./firebaseConfig";
+import {createUserWithEmailAndPassword} from "firebase/auth";
+import {useMutation} from "react-query";
+import api from "./api";
+import {ActivityIndicator} from "react-native";
+import Overlay from "./Overlay";
 export default function PartnerRegistration({navigation}){
+    const initialStateError = {
+        cnpj: false,
+        email: false,
+        password: false,
+        cPassword: false
+    }
     const [email, onChangeEmail] = useState('');
+    const [cnpj, onChangeCnpj] = useState('');
     const [password, onChangePassword] = useState('');
+    const [cPassword, onChangeCPassword] = useState('');
+    const [errors, setErrors] = useState(initialStateError)
+
+    function validate(field, value){
+        if(field === 'cnpj') setErrors(prevState => ({...prevState, cnpj: cnpjValidation(value)}))
+        if(field === 'password') setErrors(prevState => ({...prevState, password: value.length >= 6}))
+        if(field === 'cPassword') setErrors(prevState => ({...prevState, cPassword: (value.length >= 6 && password === value)}))
+        if(field === 'email') setErrors(prevState => ({...prevState, email: isEmail(value)}))
+    }
+
+function onChangeValues(field, fn, e){
+        fn(e)
+        validate(field, e)
+}
+
+const {mutate: createPartner, isLoading: isLoadingCreatePartner} = useMutation(async(args) => {
+    const {email, password, cnpj} = args
+    const isCNPJBeingUsed = await api.get(`/partner/${cnpj}`)
+
+    if(isCNPJBeingUsed){
+        Alert.alert('Alert Title', `Este CNPJ já está em uso.`, [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ]);
+    } else {
+        try{
+            const user = await createUserWithEmailAndPassword(auth, email, password)
+            return api.post('/create-partner', {email, cnpj})
+        } catch (err){
+            const errorCode = err.code;
+            const errorMessage = err.message;
+            Alert.alert('Alert Title', `${errorMessage}`, [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ]);
+        }
+    }
+
+
+
+
+})
+    function registerPartner(){
+        const validations = Object.keys(errors)?.map(key => errors[key] ? 1 : 0).reduce((prev, curr) => prev + curr)
+
+        if(validations === 4){
+            const values = {email, cnpj, password}
+            createPartner(values)
+        } else {
+
+            Alert.alert('Alert Title', `${JSON.stringify(validations)}`, [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ]);
+        }
+
+    }
+
+
+
+
+
     return (
-        <SafeAreaView style={stylesAuth.SafeAreaWidth}>
+   <>
+       {isLoadingCreatePartner && <Overlay/>}
+
+       <SafeAreaView style={stylesAuth.SafeAreaWidth}>
+           {isLoadingCreatePartner &&  <ActivityIndicator size="large" style={{position: 'absolute', alignSelf:'center', zIndex: 3}} color="#000" />}
+
             <View style={stylesAuth.FormContainer}>
+
+                <Image source={hands} style={stylesAuth.LockImage}/>
                 <Text style={styles.FormTextMain}>Ficamos felizes em saber que deseja ser nosso parceiro e nos ajudar nessa causa.</Text>
+
                 <Text style={styles.FormText}>Para continuar, precisamos de algumas informações.</Text>
-                <TextInput
-                    theme={{ colors: { onSurface: "black"}}} mode="outlined"
-                    style={stylesAuth.TextInputStyle}
-                    onChangeText={onChangeEmail}
-                    value={email.toLowerCase()}
-                    placeholder={"Seu CNPJ"}
-                    placeholderTextColor={"#00000050"}
+                <CustomInput
+                props={{
+                    onChangeText: (e) => onChangeValues('cnpj', onChangeCnpj, e),
+                    value: cnpj,
+                    placeholder:"Seu CNPJ",
+                    type: 'numeric',
+                    correct:  errors.cnpj,
+                    errorText: 'CNPJ inválido'
+                }}
                 />
-                <TextInput
-                    theme={{ colors: { onSurface: "black"}}} mode="outlined"
-                    style={stylesAuth.TextInputStyle}
-                    onChangeText={onChangeEmail}
-                    value={email.toLowerCase()}
-                    placeholder={"Seu email"}
-                    placeholderTextColor={"#00000050"}
+
+                <CustomInput
+                    props={{
+                        onChangeText: (e) => onChangeValues('email', onChangeEmail, e),
+                        value: email.toLowerCase(),
+                        placeholder:"Seu email",
+                        type: 'text',
+                        correct: errors.email,
+                        errorText: 'Email inválido'
+                    }}
                 />
-                <TextInput
-                    style={stylesAuth.TextInputStyle}
-                    onChangeText={onChangePassword}
-                    value={password}
-                    placeholder={"Sua senha"}
-                    secureTextEntry={true}
-                    placeholderTextColor={"#00000050"}
+
+                <CustomInput
+                    props={{
+                        onChangeText: (e) => onChangeValues('password', onChangePassword, e),
+                        value: password,
+                        placeholder:"Sua senha",
+                        type: 'text',
+                        correct: errors.password,
+                        secureTextEntry: true,
+                        errorText: 'A senha precisa conter 6 dígitos ou mais.'
+                    }}
                 />
-                <TextInput
-                    style={stylesAuth.TextInputStyle}
-                    onChangeText={onChangePassword}
-                    value={password}
-                    placeholder={"Confirme sua senha"}
-                    secureTextEntry={true}
-                    placeholderTextColor={"#00000050"}
+                <CustomInput
+                    props={{
+                        onChangeText: (e) => onChangeValues('cPassword', onChangeCPassword, e),
+                        value: cPassword,
+                        placeholder:"Confirme sua senha",
+                        type: 'text',
+                        correct: errors.cPassword,
+                        secureTextEntry: true,
+                        errorText: 'Senhas não conferem.'
+                    }}
                 />
                 <TouchableOpacity
                     color={"#841584"}
                     style={stylesAuth.LoginButton}
-
+                    onPress={registerPartner}
                 >
-                    <Text style={stylesAuth.LoginText}>Login</Text>
+                    <Text style={stylesAuth.LoginText}>Finalizar</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
+       </>
+
     )
 }
 
@@ -59,15 +172,17 @@ export default function PartnerRegistration({navigation}){
 const styles = StyleSheet.create({
     FormTextMain: {
         textAlign: 'center',
-        fontSize: 18,
+        fontSize: 16,
         margin: 20,
         fontWeight: 'bold',
-        lineHeight: 24
+        lineHeight: 24,
+        fontFamily: 'SFRegular'
     },
     FormText: {
         textAlign: 'center',
         fontSize: 14,
         margin: 10,
+        fontFamily: 'SFBold'
 
     },
 })
