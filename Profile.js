@@ -15,6 +15,7 @@ import rhPositive from './assets/blood-rh-positive.png'
 import rhNegative from './assets/blood-rh-negative.png'
 import rhNegativeWhite from './assets/blood-rh-negative-2.png'
 import {useQueryClient} from "react-query";
+import { storage } from "./firebaseConfig.js"
 
 
 export default function Profile(){
@@ -27,6 +28,7 @@ export default function Profile(){
     const pickerRef = useRef();
     const client = useQueryClient()
     const userType = client.getQueryData(['USER_TYPE'])
+    const [imageURL, setImageURL] = useState("");
     function open() {
         pickerRef.current.focus();
     }
@@ -46,10 +48,22 @@ export default function Profile(){
 
 
         if (!result.canceled) {
+            const file = result.assets[0].uri;
             setImage(result.assets[0].uri);
         }
+
+        const storageRef = ref(storage, `images/${file.name}`)
+        const uploadTask = uploadBytesResumable(storageRef, file)
+
+        uploadTask.on(
+        "state_change",
+        () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(url => {
+        setImageURL(url)
+        })})
     };
 
+    const storageRef = ref(storage, `images/${file.name}`)
 
     return(
         <View style={{ height: '100%', display: 'flex', alignItems: 'center', marginTop: '10%'}}>

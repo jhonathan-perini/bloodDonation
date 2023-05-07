@@ -20,5 +20,5 @@ export const FIREBASE = initializeApp(firebaseConfig);
 export const auth = getAuth(FIREBASE);
 
 app.listen(PORT, () => {
-    console.log(`oi`)
+    console.log(`Server Connected`)
 })
