@@ -13,6 +13,7 @@ import {useMutation} from "react-query";
 import api from "./api";
 import {ActivityIndicator} from "react-native";
 import Overlay from "./Overlay";
+import verifyErrorCode from "./firebaseError";
 export default function PartnerRegistration({navigation}){
     const initialStateError = {
         cnpj: false,
@@ -42,15 +43,8 @@ const {mutate: createPartner, isLoading: isLoadingCreatePartner} = useMutation(a
     const {email, password, cnpj} = args
     const isCNPJBeingUsed = await api.get(`/partner/${cnpj}`)
 
-    if(isCNPJBeingUsed){
-        Alert.alert('Alert Title', `Este CNPJ já está em uso.`, [
-            {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-            },
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ]);
+    if(isCNPJBeingUsed.data){
+       alert('Este CNPJ já está em uso.')
     } else {
         try{
             const user = await createUserWithEmailAndPassword(auth, email, password)
@@ -58,14 +52,7 @@ const {mutate: createPartner, isLoading: isLoadingCreatePartner} = useMutation(a
         } catch (err){
             const errorCode = err.code;
             const errorMessage = err.message;
-            Alert.alert('Alert Title', `${errorMessage}`, [
-                {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                },
-                {text: 'OK', onPress: () => console.log('OK Pressed')},
-            ]);
+           alert(verifyErrorCode(errorCode))
         }
     }
 
@@ -81,14 +68,8 @@ const {mutate: createPartner, isLoading: isLoadingCreatePartner} = useMutation(a
             createPartner(values)
         } else {
 
-            Alert.alert('Alert Title', `${JSON.stringify(validations)}`, [
-                {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                },
-                {text: 'OK', onPress: () => console.log('OK Pressed')},
-            ]);
+            alert('Preencha todos os campos corretamente.')
+
         }
 
     }

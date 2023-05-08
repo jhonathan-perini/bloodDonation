@@ -14,7 +14,8 @@ import bloodAB from './assets/blood-type-ab-2.png'
 import rhPositive from './assets/blood-rh-positive.png'
 import rhNegative from './assets/blood-rh-negative.png'
 import rhNegativeWhite from './assets/blood-rh-negative-2.png'
-import {useQueryClient} from "react-query";
+import {useQuery, useQueryClient} from "react-query";
+import api from "./api";
 
 
 export default function Profile(){
@@ -25,8 +26,15 @@ export default function Profile(){
     const [type, setType] = useState('');
     const [rh, setRh] = useState('');
     const pickerRef = useRef();
-    const client = useQueryClient()
-    const userType = client.getQueryData(['USER_TYPE'])
+
+   const {data: userType} = useQuery(["USER_TYPE"], async() => {
+        if(auth.currentUser?.email) {
+
+            const response = await api.get(`/find-user/${auth.currentUser.email}` )
+
+            return response.data
+        }
+    })
     function open() {
         pickerRef.current.focus();
     }

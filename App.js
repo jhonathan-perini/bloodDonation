@@ -14,7 +14,8 @@ import {Tabs2} from './TabNavigator'
 import {useFonts} from "expo-font";
 import Profile from "./Profile";
 import PartnerRegistration from "./PartnerRegistrarion";
-import {QueryClient, QueryClientProvider} from "react-query";
+import {QueryClient, QueryClientProvider, useQuery} from "react-query";
+import api from "./api";
 
 const queryClient = new QueryClient()
 const Stack = createNativeStackNavigator();

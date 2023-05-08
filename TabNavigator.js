@@ -7,6 +7,7 @@ import {useQuery} from "react-query";
 import {auth} from "./firebaseConfig";
 import api from "./api";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import {useState} from "react";
 const Tab = createBottomTabNavigator();
 
 
@@ -14,7 +15,9 @@ export function Tabs2(){
 
     const {data: user} = useQuery(["USER_TYPE"], async() => {
         if(auth.currentUser?.email) {
+
             const response = await api.get(`/find-user/${auth.currentUser.email}` )
+
             return response.data
         }
     })

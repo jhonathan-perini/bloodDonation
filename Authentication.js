@@ -43,31 +43,36 @@ export default function Authentication({navigation}){
 
         setIsLoading(true)
         if(userType === 'partner' ){
+                    if(cnpj){
+                        api.get(`/partner/${cnpj}`).then(res =>{
+                            if(res.data.hasOwnProperty('email')){
+                                signInWithEmailAndPassword(auth, res.data.email, password).then((userCredential) => {
+                                    // Signed in
+                                    let user = userCredential.user;
+                                    setIsLoading(false)
 
-            api.get(`/partner/${cnpj}`).then(res =>{
-                if(res.data.hasOwnProperty('email')){
-                    signInWithEmailAndPassword(auth, res.data.email, password).then((userCredential) => {
-                        // Signed in
-                        let user = userCredential.user;
+                                    // ...
+                                }).catch((error) => {
+                                    const errorCode = error.code;
+                                    const errorMessage = error.message;
+                                    alert(verifyErrorCode(errorCode))
+                                    setIsLoading(false)
+                                    // ..
+                                });
+                            } else {
+                                alert('CNPJ não encontrado.')
+                                setIsLoading(false)
+                            }
+
+                        }).catch(err => {
+                            setIsLoading(false)
+
+                        })
+                    } else {
+                        alert('Preencha o campo CNPJ.')
                         setIsLoading(false)
+                    }
 
-                        // ...
-                    }).catch((error) => {
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        alert(verifyErrorCode(errorCode))
-                        setIsLoading(false)
-                        // ..
-                    });
-                } else {
-                    alert('CNPJ não encontrado.')
-                    setIsLoading(false)
-                }
-
-            }).catch(err => {
-                    setIsLoading(false)
-
-            })
         } else {
             signInWithEmailAndPassword(auth, email.toLowerCase(), password).then((userCredential) => {
                 // Signed in
@@ -143,43 +148,43 @@ const [userType, setUserType] = useState('donor')
                 <View>
 
                 </View>
-                <View
+                {userType === 'donor' && <><View
                     style={{
                         borderBottomColor: 'black',
                         borderBottomWidth: StyleSheet.hairlineWidth,
-                        alignSelf:'center',
+                        alignSelf: 'center',
                         width: '35%',
                         marginTop: 20,
                         marginBottom: 10,
                     }}
                 />
-                <Text style={stylesAuth.RegisterLabel}>Ainda não faz parte?</Text>
-                <Text style={stylesAuth.RegisterLabel2}>Preencha os campos acima e clique em registrar.</Text>
-                <TouchableOpacity
-                   onPress={registerUser}
+                    <Text style={stylesAuth.RegisterLabel}>Ainda não faz parte?</Text>
+                    <Text style={stylesAuth.RegisterLabel2}>Preencha os campos acima e clique em registrar.</Text>
+                    <TouchableOpacity
+                    onPress={registerUser}
                     color={"#841584"}
                     style={stylesAuth.RegisterButton}
-                >
+                    >
                     <Text style={stylesAuth.RegisterText}>Registrar</Text>
-                </TouchableOpacity>
-                <View
+                    </TouchableOpacity></>}
+                {userType === 'partner' && <><View
                     style={{
                         borderBottomColor: 'black',
                         borderBottomWidth: StyleSheet.hairlineWidth,
-                        alignSelf:'center',
+                        alignSelf: 'center',
                         width: '35%',
                         marginTop: 20,
                         marginBottom: 10,
                     }}
                 />
-                <Text style={stylesAuth.RegisterLabel}>Quer ser um parceiro?</Text>
-                <TouchableOpacity
+                    <Text style={stylesAuth.RegisterLabel}>Quer ser um parceiro?</Text>
+                    <TouchableOpacity
                     onPress={() => navigation.navigate("AuthPartner")}
                     color={"#841584"}
                     style={stylesAuth.PartnerButton}
-                >
+                    >
                     <Text style={stylesAuth.LoginText}>Seja um parceiro</Text>
-                </TouchableOpacity>
+                    </TouchableOpacity></>}
             </View>
 
 

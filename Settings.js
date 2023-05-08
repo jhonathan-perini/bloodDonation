@@ -4,12 +4,17 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import {useFonts} from "expo-font";
 import React, {useState} from "react";
 import Overlay from "./Overlay";
+import {useQueryClient} from "react-query";
 
 export default function Settings({navigation}){
+    const client = useQueryClient()
 const [isLoading, setIsLoading] = useState(false)
     function logOut(){
     setIsLoading(true)
-        auth.signOut().then(res => setIsLoading(false)).catch(err => {
+        auth.signOut().then(res => {
+            setIsLoading(false)
+            client.invalidateQueries(['USER_TYPE'])
+        }).catch(err => {
             alert(JSON.stringify(err))
             setIsLoading(false)
         })
