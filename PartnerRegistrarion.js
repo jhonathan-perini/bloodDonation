@@ -6,7 +6,7 @@ import hands from "./assets/join-our-team.png";
 import {cnpjValidation} from "./ValidatorCNPJ";
 import CustomInput from "./CustomInput";
 import isEmail from 'validator/lib/isEmail';
-import {addDoc, collection} from "firebase/firestore";
+
 import {auth, db} from "./firebaseConfig";
 import {createUserWithEmailAndPassword} from "firebase/auth";
 import {useMutation} from "react-query";

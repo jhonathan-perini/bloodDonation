@@ -18,27 +18,31 @@ import blood from './assets/blood-donor.png'
 import hospital from './assets/hospital.png'
 import Overlay from "./Overlay";
 import api from "./api";
+import {useMutation, useQueryClient} from "react-query";
 export default function Authentication({navigation}){
     const [email, onChangeEmail] = useState('');
     const [password, onChangePassword] = useState('');
+    const {mutate: registerUser, isLoading: isLoadingRegister} = useMutation(async() => {
 
-    function registerUser(){
+            try{
 
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed in
-                const user = userCredential.user;
-                // ...
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
+                const user = await createUserWithEmailAndPassword(auth, email, password)
+                return api.post('/user', {email})
+            } catch (err){
+                const errorCode = err.code;
+                const errorMessage = err.message;
                 alert(verifyErrorCode(errorCode))
-                // ..
-            });
-    }
+            }
+
+
+
+
+
+    })
+
     const [isLoading, setIsLoading] = useState(false)
     const [cnpj, setCnpj] = useState('')
+    const client = useQueryClient()
     function logIn(){
 
         setIsLoading(true)
@@ -88,7 +92,7 @@ export default function Authentication({navigation}){
                 // ..
             });
         }
-
+client.invalidateQueries(['USER_TYPE'])
     }
 const [userType, setUserType] = useState('donor')
     const options = [
@@ -205,6 +209,10 @@ export const stylesAuth = StyleSheet.create({
         backgroundColor: "#00000010",
         color: "#3d3d3d",
         width: '80%',
+        fontFamily: 'SFRegular'
+    },
+    TextInputStyleNumber: {
+        borderWidth: 0,
         fontFamily: 'SFRegular'
     },
     SafeAreaWidth: {

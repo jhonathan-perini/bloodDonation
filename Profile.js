@@ -1,4 +1,4 @@
-import {Text, View, TextInput, StyleSheet, TouchableOpacity, Image} from "react-native";
+import {Text, View, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator} from "react-native";
 import React, {useRef, useState} from "react";
 import {stylesAuth} from "./Authentication";
 import {auth} from "./firebaseConfig";
@@ -14,25 +14,87 @@ import bloodAB from './assets/blood-type-ab-2.png'
 import rhPositive from './assets/blood-rh-positive.png'
 import rhNegative from './assets/blood-rh-negative.png'
 import rhNegativeWhite from './assets/blood-rh-negative-2.png'
-import {useQuery, useQueryClient} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import api from "./api";
+import axios from "axios";
+import CustomInput from "./CustomInput";
+import { cpf as cpfValidator } from 'cpf-cnpj-validator';
+import Overlay from "./Overlay";
 
 
 export default function Profile(){
-    const [checked, setChecked] = useState('male');
-
-
+    const [checked, setChecked] = useState('');
+    const initialStateError = {
+        cpf: false,
+        cep: false,
+    }
+    const [errors, setErrors] = useState(initialStateError)
+const client = useQueryClient()
     const [image, setImage] = useState(null);
-    const [type, setType] = useState('');
-    const [rh, setRh] = useState('');
-    const pickerRef = useRef();
 
+    const pickerRef = useRef();
+    const [personalInfo, setPersonalInfo] = useState({cpf: '', cep: '', state: '', city: '', neighborhood: '', street: '', number: '', genre: '', bloodType: '', bloodRh: '' })
    const {data: userType} = useQuery(["USER_TYPE"], async() => {
         if(auth.currentUser?.email) {
 
             const response = await api.get(`/find-user/${auth.currentUser.email}` )
-
+            setPersonalInfo(prevState => ({...prevState, ...response.data}))
+            validate('cpf', response.data?.cpf)
             return response.data
+        }
+    })
+    function validate(field, value){
+        if(field === 'cpf') setErrors(prevState => ({...prevState, cpf: cpfValidator.isValid(value)}))
+
+
+    }
+    const saveInfo = useMutation(async(args) => {
+if(userType?.cnpj){
+    delete args?.genre
+    delete args?.bloodType
+    delete args?.bloodRh
+}
+        if(args.bloodType && !args.bloodRh) return alert('Preencha o fator do seu tipo sanguíneo.')
+        if(!errors.cpf && personalInfo.cpf.length > 0 && !userType?.cnpj) return  alert('CPF inválido.')
+        if(auth.currentUser) {
+            if(errors.cep){
+                if(personalInfo?.street?.length > 0 ){
+                    if(!personalInfo?.number){
+                        alert('Preencha o número do local.')
+                    } else {
+                        if(!userType){
+                            return await api.post(`/user`, args)
+                        } else {
+                            return await api.patch(`/user/${userType?._id}`, args)
+                        }
+                    }
+
+                } else {
+
+                    alert('Preencha um CEP válido.')
+                }
+
+            } else if(!errors.cep && personalInfo?.cep?.length === 0 ) {
+                if(!userType){
+                    return await api.post(`/user`, args)
+                } else {
+                    return await api.patch(`/user/${userType?._id}`, args)
+                }
+
+            } else {
+                alert('Preencha o CEP corretamente.')
+            }
+
+
+
+        }
+    }, {
+        onSuccess: async() => {
+            await client.invalidateQueries(["USER_TYPE"])
+            alert('Informações atualizadas com sucesso')
+        },
+        onError: async() => {
+
         }
     })
     function open() {
@@ -42,6 +104,15 @@ export default function Profile(){
     function close() {
         pickerRef.current.blur();
     }
+
+    function savePersonalInfo(){
+        saveInfo.mutate(personalInfo)
+    }
+    function definePersonalInfo(value, field){
+        setPersonalInfo(prevState => ({...prevState, [field]: value}))
+        validate(field,value)
+    }
+
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -58,10 +129,32 @@ export default function Profile(){
         }
     };
 
+    useQuery(["USER_CEP", personalInfo.cep], async () => {
+        if(personalInfo.cep?.length === 8){
+            const response = await axios.get(`https://viacep.com.br/ws/${Number(personalInfo.cep)}/json/`, {baseURL: ''})
+            if(response?.data?.logradouro){
+                const {logradouro, bairro, localidade, uf} = response.data
+                setPersonalInfo((prevState) => ({...prevState, state: uf, city: localidade, neighborhood: bairro, street: logradouro}))
+                setErrors(prevState => ({...prevState, cep: true}))
+            } else {
+                setErrors(prevState => ({...prevState, cep: false}))
+            }
+
+        } else {
+            setErrors(prevState => ({...prevState, cep: false}))
+        }
+
+
+    })
 
     return(
-        <View style={{ height: '100%', display: 'flex', alignItems: 'center', marginTop: '10%'}}>
-        <View style={{backgroundColor: 'white', width: '90%', display: 'flex', alignItems: 'center', borderRadius: 20}} >
+        <>
+        {saveInfo.isLoading && <Overlay/>}
+        <View style={{backgroundColor: 'white', height: '100%'}}>
+
+            {saveInfo.isLoading &&  <ActivityIndicator size="large" style={{position: 'absolute', alignSelf:'center', top: '40%', zIndex: 3}} color="#000" />}
+        <ScrollView contentContainerStyle={{ display: 'flex', alignItems: 'center'}} >
+
             <Image source={{uri: image || 'https://s2.glbimg.com/1o2J-rf2G9qtlQlm82gaq-mFBec=/0x129:1024x952/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/7/i/ME2AxRRoygUyFPCDe0jQ/3.png'}} style={{width: 100,
                 height: 100,
                 alignSelf: "center",
@@ -88,6 +181,8 @@ export default function Profile(){
                     width: '80%'}}
                 placeholder={userType?.cnpj ? "Nome da entidade" : "Seu nome"}
                 placeholderTextColor={"#00000050"}
+                onChangeText={(e) => definePersonalInfo(e, 'name')}
+                value={personalInfo?.name}
             />
             <TextInput
                 theme={{ colors: { onSurface: "black"}}} mode="outlined"
@@ -98,14 +193,75 @@ export default function Profile(){
                 editable={false}
                 selectTextOnFocus={false}
             />
-            <TextInput
-                theme={{ colors: { onSurface: "black"}}} mode="outlined"
-                style={style.Button}
-                placeholder={userType?.cnpj ? 'Seu CNPJ' : "Seu CPF"}
-                placeholderTextColor={"#00000050"}
-                value={userType?.cnpj ? userType?.cnpj : ""}
-                editable={!userType?.cnpj}
+            <CustomInput
+                props={{
+                    onChangeText: (e) => definePersonalInfo(e, 'cpf'),
+                    value: userType?.cnpj ? userType?.cnpj : userType?.cpf?.length > 0 ? userType?.cpf : personalInfo.cpf,
+                    placeholder: userType?.cnpj ? 'Seu CNPJ' : "Seu CPF",
+                    editable: !userType?.cnpj || !userType?.cpf?.length > 0,
+                    type: 'numeric',
+                    maxLength: 11,
+                    correct: userType?.cnpj ? true : errors.cpf,
+                    errorText: 'CPF inválido',
+
+                }}
             />
+            <CustomInput
+                props={{
+                    onChangeText: (e) => definePersonalInfo(e, 'cep'),
+                    value: personalInfo.cep,
+                    placeholder: 'Seu CEP',
+                    editable: !userType?.cnpj || !userType?.cpf?.length > 0,
+                    type: 'numeric',
+                    maxLength: 8,
+                    correct: errors.cep,
+                    errorText: 'CEP inválido',
+
+                }}
+            />
+
+            {(errors.cep && personalInfo?.state) && <TextInput
+                theme={{colors: {onSurface: "black"}}} mode="outlined"
+                style={style.Button}
+                placeholder={'Sua rua'}
+                placeholderTextColor={"#00000050"}
+                value={personalInfo?.street}
+                editable={false}
+            />}
+            {(errors.cep && personalInfo?.state) && <TextInput
+                theme={{colors: {onSurface: "black"}}} mode="outlined"
+                style={style.Button}
+                placeholder={"Seu bairro"}
+                placeholderTextColor={"#00000050"}
+                value={personalInfo?.neighborhood}
+                editable={false}
+            />}
+            {(errors.cep && personalInfo?.state) && <TextInput
+                theme={{colors: {onSurface: "black"}}} mode="outlined"
+                style={style.Button}
+                placeholder={"Número"}
+                placeholderTextColor={"#00000050"}
+                value={personalInfo?.number}
+                onChangeText={(e) => definePersonalInfo(e, 'number')}
+                inputMode='numeric'
+            />}
+            {(errors.cep && personalInfo?.state) && <TextInput
+                theme={{colors: {onSurface: "black"}}} mode="outlined"
+                style={style.Button}
+                placeholder={"Sua cidade"}
+                placeholderTextColor={"#00000050"}
+                value={personalInfo?.city}
+                editable={false}
+            />}
+            {(errors.cep && personalInfo?.state) && <TextInput
+                theme={{colors: {onSurface: "black"}}} mode="outlined"
+                style={style.Button}
+                placeholder={"Seu estado"}
+                placeholderTextColor={"#00000050"}
+                value={personalInfo?.state}
+                editable={false}
+            />}
+
             {!userType?.cnpj && <View style={{
                 display: 'flex',
 
@@ -115,29 +271,29 @@ export default function Profile(){
             }}>
 
                 <TouchableOpacity
-                    onPress={() => setChecked('female')}
+                    onPress={() => definePersonalInfo('female', 'genre')}
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: checked === 'female' ? "#ababab" : 'white',
+                        backgroundColor: personalInfo.genre === 'female' ? "#ababab" : 'white',
                         borderRadius: 10,
                         padding: 10
                     }}>
-                    <Text style={{color: checked === 'female' ? "white" : 'black'}}>Feminino</Text>
+                    <Text style={{color: personalInfo.genre === 'female' ? "white" : 'black'}}>Feminino</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => setChecked('male')}
+                    onPress={() => definePersonalInfo('male', 'genre')}
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: checked === 'male' ? "#ababab" : 'white',
+                        backgroundColor: personalInfo.genre === 'male' ? "#ababab" : 'white',
                         borderRadius: 10,
                         padding: 10,
                     }}
                 >
-                    <Text style={{color: checked === 'male' ? "white" : 'black'}}>Masculino</Text>
+                    <Text style={{color: personalInfo.genre === 'male' ? "white" : 'black'}}>Masculino</Text>
                 </TouchableOpacity>
 
             </View>}
@@ -150,60 +306,60 @@ export default function Profile(){
             }}>
 
                 <TouchableOpacity
-                    onPress={() => setType('a')}
+                    onPress={() => definePersonalInfo('a', 'bloodType')}
                     style={{
                         marginRight: 10,
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: type === 'a' ? "rgba(255,68,68,0.8)" : 'white',
+                        backgroundColor: personalInfo.bloodType === 'a' ? "rgba(255,68,68,0.8)" : 'white',
                         borderRadius: 10,
                         padding: 5
                     }}>
-                    <Image source={type === 'a' ? bloodFillA : bloodA} style={{width: 30, height: 30}}/>
+                    <Image source={personalInfo.bloodType === 'a' ? bloodFillA : bloodA} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => setType('b')}
+                    onPress={() => definePersonalInfo('b', 'bloodType')}
                     style={{
                         marginRight: 10,
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: type === 'b' ? "rgba(255,68,68,0.8)" : 'white',
+                        backgroundColor: personalInfo.bloodType === 'b' ? "rgba(255,68,68,0.8)" : 'white',
                         borderRadius: 10,
                         padding: 5
                     }}>
-                    <Image source={type === 'b' ? bloodBFill : bloodB} style={{width: 30, height: 30}}/>
+                    <Image source={personalInfo.bloodType === 'b' ? bloodBFill : bloodB} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => setType('o')}
+                    onPress={() => definePersonalInfo('o', 'bloodType')}
                     style={{
                         marginRight: 10,
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: type === 'o' ? "rgba(255,68,68,0.8)" : 'white',
+                        backgroundColor: personalInfo.bloodType === 'o' ? "rgba(255,68,68,0.8)" : 'white',
                         borderRadius: 10,
                         padding: 5
                     }}>
-                    <Image source={type === 'o' ? bloodFill : bloodO} style={{width: 30, height: 30}}/>
+                    <Image source={personalInfo.bloodType === 'o' ? bloodFill : bloodO} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => setType('ab')}
+                    onPress={() => definePersonalInfo('ab', 'bloodType')}
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: type === 'ab' ? "rgba(255,68,68,0.8)" : 'white',
+                        backgroundColor: personalInfo.bloodType === 'ab' ? "rgba(255,68,68,0.8)" : 'white',
                         borderRadius: 10,
                         padding: 5
                     }}>
-                    <Image source={type === 'ab' ? bloodFillAB : bloodAB} style={{width: 30, height: 30}}/>
+                    <Image source={personalInfo.bloodType === 'ab' ? bloodFillAB : bloodAB} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
 
 
             </View>}
-            {type && <View style={{
+            {personalInfo.bloodType && <View style={{
                 display: 'flex',
 
                 flexDirection: 'row',
@@ -211,33 +367,33 @@ export default function Profile(){
                 marginHorizontal: 35
             }}>
                 <TouchableOpacity
-                    onPress={() => setRh('+')}
+                    onPress={() => definePersonalInfo('+', 'bloodRh')}
                     style={{
                         marginRight: 10,
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: rh === '+' ? "rgba(255,68,68,0.8)" : 'white',
+                        backgroundColor: personalInfo.bloodRh === '+' ? "rgba(255,68,68,0.8)" : 'white',
                         borderRadius: 10,
                         padding: 5
                     }}>
-                    <Image source={rh === '+' ? rhNegativeWhite : rhPositive} style={{width: 30, height: 30}}/>
+                    <Image source={personalInfo.bloodRh === '+' ? rhNegativeWhite : rhPositive} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => setRh('-')}
+                    onPress={() => definePersonalInfo('-', 'bloodRh')}
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: rh === '-' ? "rgba(255,68,68,0.8)" : 'white',
+                        backgroundColor: personalInfo.bloodRh === '-' ? "rgba(255,68,68,0.8)" : 'white',
                         borderRadius: 10,
                         padding: 5
                     }}>
-                    <Image source={rh === '-' ? rhNegativeWhite : rhNegative} style={{width: 30, height: 30}}/>
+                    <Image source={personalInfo.bloodRh === '-' ? rhNegativeWhite : rhNegative} style={{width: 30, height: 30}}/>
                 </TouchableOpacity>
             </View>}
             <TouchableOpacity
-
+                onPress={savePersonalInfo}
                 color={"#841584"}
                 style={{    backgroundColor: "rgba(255,68,68,0.8)",
                     borderRadius: 10,
@@ -249,16 +405,18 @@ export default function Profile(){
                 <Text style={stylesAuth.LoginText}>Salvar</Text>
             </TouchableOpacity>
 
+
+        </ScrollView>
         </View>
-        </View>
+        </>
     )
 }
 
-const style = StyleSheet.create({
+export const style = StyleSheet.create({
     Button: {
         height: 50,
         margin: 12,
-        borderWidth: 0,
+        borderWidth: 0 ,
         padding: 10,
         borderRadius: 10,
         backgroundColor: "#00000010",

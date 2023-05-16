@@ -1,6 +1,24 @@
-import {Text} from "react-native";
-export default function Donations(){
+import {Text, TouchableOpacity, View} from "react-native";
+
+
+
+export default function Donations({navigation}){
+
     return(
-        <Text>Donations</Text>
+        <View>
+
+        <TouchableOpacity
+onPress={() => navigation.navigate('BeforeScheduleInfo')}
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+
+                borderRadius: 10,
+                padding: 10
+            }}>
+            <Text >Agendar doação</Text>
+        </TouchableOpacity>
+        </View>
     )
 }

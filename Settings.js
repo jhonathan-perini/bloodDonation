@@ -2,7 +2,7 @@ import {Text, FlatList, StyleSheet, TouchableOpacity, Pressable, ActivityIndicat
 import {auth} from "./firebaseConfig";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {useFonts} from "expo-font";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import Overlay from "./Overlay";
 import {useQueryClient} from "react-query";
 
@@ -14,6 +14,7 @@ const [isLoading, setIsLoading] = useState(false)
         auth.signOut().then(res => {
             setIsLoading(false)
             client.invalidateQueries(['USER_TYPE'])
+            client.invalidateQueries(['USER_SUPPLY'])
         }).catch(err => {
             alert(JSON.stringify(err))
             setIsLoading(false)
@@ -23,17 +24,28 @@ const [isLoading, setIsLoading] = useState(false)
     function navigate(page){
         navigation.navigate(page)
     }
+    const type = client.getQueryData('USER_TYPE')
 
+    const dataPartner = [
+        {key: 'Meus dados', icon: 'account', page: 'Profile' },
+
+        // {key: 'Notificações', icon: 'bell', page: 2},
+        {key: 'Sair', icon: 'logout', action: logOut},
+    ]
+
+    const dataDonor = [
+        {key: 'Meus dados', icon: 'account', page: 'Profile' },
+        {key: 'Informações', icon: 'information-outline', page: 'Information' },
+        // {key: 'Notificações', icon: 'bell', page: 2},
+        {key: 'Sair', icon: 'logout', action: logOut},
+    ]
     return (
         <>
 
         <FlatList style={styles.back}
-            data={[
-                {key: 'Meus dados', icon: 'account', page: 'Profile' },
-                // {key: 'Notificações', icon: 'bell', page: 2},
-                {key: 'Sair', icon: 'logout', action: logOut},
-            ]}
+            data={!type?.cnpj ? dataDonor : dataPartner}
             renderItem={({item}) => {
+
 
                 return (
                     <Pressable
