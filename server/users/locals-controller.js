@@ -1,8 +1,10 @@
 import {MONGO_CLIENT} from "../db.js";
 import axios from "axios";
+import {ObjectId} from "mongodb";
 
 
 const USERS_COLLECTION = MONGO_CLIENT.collection('users')
+const SCHEDULE_COLLECTION = MONGO_CLIENT.collection('schedule')
 
 export async function findLocals(req, res) {
     const body = req.body
@@ -46,5 +48,22 @@ export async function findLocals(req, res) {
     console.log(ceps)
 
 
+
+}
+
+export async function scheduleDonation(req, res){
+    const schedule = req.body
+    await SCHEDULE_COLLECTION.insertOne(schedule)
+
+    res.status(200).send()
+
+}
+
+
+export async function getSchedule(req, res){
+    const schedule = req.params.id
+    const response = await SCHEDULE_COLLECTION.find({_id: new ObjectId(schedule)}).toArray()
+
+    res.status(200).send(response)
 
 }
