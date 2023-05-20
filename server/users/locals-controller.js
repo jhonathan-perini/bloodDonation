@@ -36,6 +36,7 @@ export async function findLocals(req, res) {
         responseAxios.data.rows[0].elements[index].address = destinations[index].replace(',', '')
         responseAxios.data.rows[0].elements[index].name = response[index].name
         responseAxios.data.rows[0].elements[index].cnpj = response[index].cnpj
+        responseAxios.data.rows[0].elements[index].supply = response[index]?.supply
     })
     console.log(responseAxios.data.rows[0].elements)
 
