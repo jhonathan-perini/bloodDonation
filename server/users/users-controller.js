@@ -13,3 +13,12 @@ export async function updateUser(req, res) {
 
 }
 
+export async function getDonations(req, res) {
+    let id = req.params.id
+
+    const response = await USERS_COLLECTION.find({"schedule.data.user.email": id}).toArray()
+
+    console.log(JSON.stringify(response))
+    res.status(200).send(response)
+
+}

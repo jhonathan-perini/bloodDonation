@@ -18,6 +18,7 @@ const Tab = createBottomTabNavigator();
 const Stack2 = createNativeStackNavigator();
 const Stack3 = createNativeStackNavigator();
 import TabContext from "./TabContext";
+import ScheduleConfirmation from "./ScheduleConfirmation";
 export function Home2() {
     return (
         <Stack2.Navigator>
@@ -25,6 +26,7 @@ export function Home2() {
             <Stack2.Screen name="BeforeScheduleInfo" options={{headerShown: true}}  component={BeforeScheduleInfo} />
             <Stack2.Screen name="DonationLocal" options={{headerShown: true}}  component={Locals} />
             <Stack2.Screen name="DonationSchedule" options={{headerShown: true}}  component={DonationSchedule} />
+            <Stack2.Screen name="ScheduleConfirmation" options={{headerShown: true, headerBackVisible: false}}  component={ScheduleConfirmation} />
         </Stack2.Navigator>
     );
 }

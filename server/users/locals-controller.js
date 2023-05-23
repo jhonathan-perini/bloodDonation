@@ -31,8 +31,10 @@ export async function findLocals(req, res) {
     const destinations = response?.map(dest => { ceps.push(dest.cep);  return `${dest.street} ${dest.number} ${dest.city},`})
 
     const origin = `${body.street} ${body.number} ${body.city}`
+
     const responseAxios = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.replaceAll(' ', '+')}&destinations=${destinations.map(dest2 => dest2.replaceAll(' ', '+').replaceAll(',', '|'))}&mode=driving&language=pt-BR&sensor=false&key=AIzaSyC0AIyymf7G-in8Pie_B7GkbVFzJjdjVYE
 `, {baseURL: ''})
+    console.log(JSON.stringify(responseAxios.data))
     responseAxios.data.rows[0].elements?.forEach((value, index) => {
         responseAxios.data.rows[0].elements[index].cep = ceps[index]
         responseAxios.data.rows[0].elements[index].address = destinations[index].replace(',', '')
@@ -53,7 +55,8 @@ export async function findLocals(req, res) {
 
 export async function scheduleDonation(req, res){
     const schedule = req.body
-    await SCHEDULE_COLLECTION.insertOne(schedule)
+    console.log(JSON.stringify(schedule))
+    await USERS_COLLECTION.updateOne({cnpj: schedule?.cnpj}, {$addToSet: {schedule: {date: schedule.selectedDate, hour: schedule.selectedTime, data: schedule.data}}})
 
     res.status(200).send()
 
@@ -62,8 +65,17 @@ export async function scheduleDonation(req, res){
 
 export async function getSchedule(req, res){
     const schedule = req.params.id
-    const response = await SCHEDULE_COLLECTION.find({_id: new ObjectId(schedule)}).toArray()
+    const response = await USERS_COLLECTION.find({cnpj: schedule}).toArray()
 
     res.status(200).send(response)
+
+}
+
+export async function deleteSchedule(req, res){
+    const cnpj = req.params.id
+    const {delItem} = req.body
+     await USERS_COLLECTION.updateOne({cnpj}, {$pull: {schedule: {date: delItem.date, hour: delItem.hour} }})
+
+    res.status(200).send()
 
 }

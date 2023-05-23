@@ -10,6 +10,12 @@ import war from './assets/warning2.png'
 import bloodap from './assets/blood-bag-ap.png'
 import StorageModal from "./StorageModal";
 import Overlay from "./Overlay";
+export function retrieveDate(item, type){
+    const firstDigit = item.address.search(/\d/)
+    const street = item.address.slice(0, firstDigit)
+    const number = item.address.slice(firstDigit).replace(' ', '˜').split('˜')
+    return type === 'street' ? `${street}, ${number[0]}` : `${number[1]}`
+}
 export default function Locals({navigation}){
     const client = useQueryClient()
 
@@ -43,12 +49,7 @@ const [userType, setUserType] = useState('')
         } else return '0'
     }
 
-function retrieveDate(item, type){
-    const firstDigit = item.address.search(/\d/)
-    const street = item.address.slice(0, firstDigit)
-    const number = item.address.slice(firstDigit).replace(' ', '˜').split('˜')
-    return type === 'street' ? `${street}, ${number[0]}` : `${number[1]}`
-}
+
 
 const [overlay, setOverlay] = useState(false)
 const [supply, setSupply] = useState({})
