@@ -50,6 +50,7 @@ export default function BloodSupply({navigation}){
     }, {
         onSuccess: async() => {
             await client.invalidateQueries(["USER_SUPPLY"])
+            alert('Dados salvos com sucesso.')
         }
     })
     const initialState = {
