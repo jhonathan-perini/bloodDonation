@@ -108,13 +108,13 @@ export default function BeforeScheduleInfo({navigation}){
 
                 <TouchableOpacity
             disabled={!check}
-            onPress={() => navigation.navigate('DonationSchedule')}
+            onPress={() => navigation.navigate('DonationLocal')}
                     style={{
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
                         justifyContent: 'center',
-            backgroundColor: check ? 'tomato': '#b2b2b2',
+            backgroundColor: check ? "rgba(255,68,68,0.8)": '#b2b2b2',
                             borderRadius: 10,
                             padding: 10,
                         marginBottom: 10,

@@ -1,12 +1,13 @@
 import {Router} from "express";
-import {createUser, findPartner, findUser} from "./auth-partner-controller.js";
-import {updateUser} from "./users-controller.js";
-import {findLocals} from "./locals-controller.js";
+import {deleteSchedule, findLocals, getSchedule, scheduleDonation} from "./locals-controller.js";
 
 const localsRouter = Router()
 
 
 localsRouter.route('/locals').post(findLocals)
+
+localsRouter.route('/schedule/:id').get(getSchedule).patch(scheduleDonation)
+localsRouter.route('/del-schedule/:id').patch(deleteSchedule)
 
 
 

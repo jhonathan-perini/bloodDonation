@@ -1,14 +1,24 @@
 import {Text, Button, FlatList, View, Pressable, TouchableOpacity, Image} from "react-native";
 import {useQuery, useQueryClient} from "react-query";
 import api from "./api";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {TextInput} from "react-native-paper";
 import {stylesAuth} from "./Authentication";
 import lock from "./assets/blood-bag.png";
 import war from './assets/warning2.png'
+import bloodap from './assets/blood-bag-ap.png'
+import StorageModal from "./StorageModal";
+import Overlay from "./Overlay";
+export function retrieveDate(item, type){
+    const firstDigit = item.address.search(/\d/)
+    const street = item.address.slice(0, firstDigit)
+    const number = item.address.slice(firstDigit).replace(' ', '˜').split('˜')
+    return type === 'street' ? `${street}, ${number[0]}` : `${number[1]}`
+}
 export default function Locals({navigation}){
     const client = useQueryClient()
+
 const [userType, setUserType] = useState('')
 
     useEffect(() => {
@@ -32,18 +42,26 @@ const [userType, setUserType] = useState('')
             return  response.data
         }
     })
-function retrieveDate(item, type){
-    const firstDigit = item.address.search(/\d/)
-    const street = item.address.slice(0, firstDigit)
-    const number = item.address.slice(firstDigit).replace(' ', '˜').split('˜')
-    return type === 'street' ? `${street}, ${number[0]}` : `${number[1]}`
-}
+
+    function getSupply(item, type){
+        if(item?.hasOwnProperty('supply')){
+            return item.supply[type]
+        } else return '0'
+    }
+
+
+
+const [overlay, setOverlay] = useState(false)
+const [supply, setSupply] = useState({})
     return(
         // <Button onPress={search} title={'oi'}></Button>
+        <>
+
+
         <View style={{display: 'flex', alignItems: 'center', width: '100%', backgroundColor: 'white', height: '100%'}}>
 
             {userType?.cep?.length > 0 ?  <><Image source={lock} style={[stylesAuth.LockImage,]}/>
-                <Text style={{fontFamily: 'SFRegular', marginVertical: 10, textAlign: 'center', width: '95%', fontSize: 16}}>Escolha um de nossas parceiros e agende sua doação!</Text>
+                <Text style={{fontFamily: 'SFRegular', marginVertical: 10, textAlign: 'center', width: '95%', fontSize: 16}}>Escolha um de nossos parceiros e agende sua doação!</Text>
 
 
                 <FlatList
@@ -79,13 +97,17 @@ function retrieveDate(item, type){
                 <MaterialCommunityIcons name={'cellphone'} size={20} color={'black'}/>
                 <Text style={{fontSize: 12, fontFamily: 'SFRegular', marginLeft:4}}>To be available </Text>
                 </View>
+
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 5, alignSelf: 'center'}}>
                 <TouchableOpacity
                 color={"#841584"}
                 style={[stylesAuth.LoginButton, {padding: 8, borderRadius: 6, width: '40%', marginRight: 6}]}
+                onPress={() => navigation.navigate('DonationSchedule', {local: item})}
                 >
                 <Text style={[stylesAuth.LoginText, {fontSize: 12}]}>Agendar doação</Text>
                 </TouchableOpacity>
+                    {item.hasOwnProperty('supply') && <StorageModal overlay={{overlay, setOverlay}} supply={item}/>}
+
 
 
                 </View>
@@ -113,5 +135,6 @@ function retrieveDate(item, type){
                 </View>
                 }
         </View>
+        </>
     )
 }
