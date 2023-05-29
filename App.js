@@ -11,7 +11,6 @@ import Profile from "./Profile";
 import PartnerRegistration from "./PartnerRegistrarion";
 import {QueryClient, QueryClientProvider} from "react-query";
 import Information from "./Information";
-<<<<<<< HEAD
 import Notifications from "./Notifications";
 
 
