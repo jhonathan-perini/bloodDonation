@@ -58,6 +58,7 @@ const client = useQueryClient()
           onSuccess: async () => {
               alert('Agendamento realizado.')
               await client.invalidateQueries('SCHEDULE_LOCAL')
+              await client.invalidateQueries('USER_DONATIONS')
               setSelectedDate(null)
               setSelectedtime(null)
               navigation.navigate('ScheduleConfirmation')

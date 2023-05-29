@@ -9,6 +9,7 @@ import api from "./api";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {retrieveDate} from "./Locals";
 import DeleteDonationModal from "./DeleteDonationModal";
+import {StatusBar} from "expo-status-bar";
 
 
 export default function Donations({navigation}){
@@ -51,13 +52,14 @@ const [confirmDel, setConfirmDel] = useState(null)
         }
     })
     function defineDel(item){
-    setDeleting(!deleting)
+    setDeleting(true)
         setdelItem(item)
     }
 useEffect(() => {
     confirmDel && delSchedule.mutate({cnpj: delItem.data.local.cnpj, delItem })
 }, [confirmDel])
     return(
+        <>
         <SafeAreaView style={[donations?.length === 0 && ST.centeredView,{backgroundColor: 'white', width: '100%', height: '100%'}]}>
             {donations?.length > 0 &&
                 <TouchableOpacity
@@ -150,7 +152,7 @@ useEffect(() => {
                                             >
                                                 <Text style={[stylesAuth.LoginText, {fontSize: 12}]}>Cancelar doação</Text>
                                             </TouchableOpacity>
-                                            {deleting && <DeleteDonationModal del={{deleting, setDeleting}} cDel={{confirmDel, setConfirmDel}} />}
+                                           <DeleteDonationModal del={{deleting, setDeleting}} cDel={{confirmDel, setConfirmDel}} />
 
 
 
@@ -167,7 +169,10 @@ useEffect(() => {
                     </ScrollView>
                 }}
             />}
+
         </SafeAreaView>
+
+    </>
     )
 }
 

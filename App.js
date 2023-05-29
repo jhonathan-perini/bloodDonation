@@ -1,6 +1,6 @@
 import { StyleSheet} from 'react-native';
 import {auth} from "./firebaseConfig";
-import {useState} from "react";
+import React, {useState} from "react";
 import Auth from "./Authentication"
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -11,7 +11,7 @@ import Profile from "./Profile";
 import PartnerRegistration from "./PartnerRegistrarion";
 import {QueryClient, QueryClientProvider} from "react-query";
 import Information from "./Information";
-
+import {StatusBar} from "expo-status-bar";
 
 
 const queryClient = new QueryClient()
@@ -54,6 +54,7 @@ export default function App() {
 
             </Stack.Navigator>
           </NavigationContainer>
+        <StatusBar style="dark"/>
       </QueryClientProvider>
   );
 }
