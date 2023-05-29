@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     View,
     Image,
-    ActivityIndicator
+    ActivityIndicator, TouchableWithoutFeedback, Keyboard
 } from 'react-native';
 import lock from './assets/locks.png'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
@@ -103,6 +103,7 @@ const [userType, setUserType] = useState('donor')
     return (
 <>
     {isLoading && <Overlay/>}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView style={stylesAuth.SafeAreaWidth}>
             {isLoading &&  <ActivityIndicator size="large" style={{position: 'absolute', alignSelf:'center', zIndex: 3}} color="#000" />}
             <View style={stylesAuth.FormContainer}>
@@ -194,6 +195,7 @@ const [userType, setUserType] = useState('donor')
 
 
         </SafeAreaView>
+    </TouchableWithoutFeedback>
 </>
     )
 }

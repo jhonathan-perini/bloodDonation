@@ -1,4 +1,4 @@
-import {Button, FlatList, Pressable, Text, View} from 'react-native'
+import {Button, FlatList, Keyboard, Pressable, Text, View, TouchableWithoutFeedback} from 'react-native'
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import React, {useEffect, useState} from "react";
 import {TextInput} from "react-native-paper";
@@ -50,6 +50,7 @@ export default function BloodSupply({navigation}){
     }, {
         onSuccess: async() => {
             await client.invalidateQueries(["USER_SUPPLY"])
+            alert('Dados salvos com sucesso.')
         }
     })
     const initialState = {
@@ -108,7 +109,7 @@ export default function BloodSupply({navigation}){
     }
 
     return (
-
+<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <FlatList
 
                   data={bloodType}
@@ -166,7 +167,7 @@ fontSize: 12,
 
                   }}
         />
-
+</TouchableWithoutFeedback>
 
 
 )

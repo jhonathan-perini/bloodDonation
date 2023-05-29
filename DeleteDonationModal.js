@@ -26,6 +26,8 @@ import cry from "./assets/cry.png";
 
 export default function DeleteDonationModal({del, cDel}){
 
+const context = useContext(TabContext)
+const [state,setState] = useState(false)
 
     function handleModal(text){
 text === 'yes' && cDel.setConfirmDel(true)
@@ -34,7 +36,16 @@ text === 'no' && cDel.setConfirmDel(false)
 
     }
 
+useEffect(() => {
+    if(del.deleting) setState(true)
+    if(!(del.deleting)) setState(false)
 
+}, [del])
+    useEffect(() => {
+        if(state) context.setOverlay(true)
+        if(!state) context.setOverlay(false)
+
+    }, [state])
     return (
         <>
 
@@ -44,7 +55,7 @@ text === 'no' && cDel.setConfirmDel(false)
         <Modal
     animationType="slide"
     transparent={true}
-    visible={del.deleting}
+    visible={state}
   >
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
