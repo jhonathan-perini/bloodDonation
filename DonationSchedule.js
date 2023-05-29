@@ -1,22 +1,16 @@
-import {
-    View,
-    ScrollView,
-    Text,
-    SafeAreaView,
-    TouchableOpacity, FlatList, Pressable, ActivityIndicator,
-} from "react-native";
-  import { Calendar } from "react-native-calendars";
-  import React, {useContext, useEffect, useState} from "react";
-  import { SelectList } from "react-native-dropdown-select-list";
+import {ActivityIndicator, FlatList, SafeAreaView, Text, TouchableOpacity, View,} from "react-native";
+import {Calendar} from "react-native-calendars";
+import React, {useContext, useEffect, useState} from "react";
 import {LocaleConfig} from "react-native-calendars/src/index";
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import api from "./api";
-import Overlay from "./Overlay";
 import TabContext from "./TabContext";
+import {auth} from "./firebaseConfig";
 
-  
-  export default function DonationSchedule({ route, navigation }) {
+
+export default function DonationSchedule({ route, navigation }) {
     const { local } = route.params;
+
       LocaleConfig.locales['br'] = {
 
           monthNames: [
@@ -58,11 +52,14 @@ const client = useQueryClient()
           onSuccess: async () => {
               alert('Agendamento realizado.')
               await client.invalidateQueries('SCHEDULE_LOCAL')
+              await client.invalidateQueries('USER_DONATIONS')
               setSelectedDate(null)
               setSelectedtime(null)
               navigation.navigate('ScheduleConfirmation')
           }
       })
+
+
       const initialTime = [
           { key: "6", value: "06:00" },
           { key: "7", value: "07:00" },
@@ -118,6 +115,8 @@ const {data: scheduleLocal} = useQuery(['SCHEDULE_LOCAL'], async() => {
       }, [saveSchedule.isLoading])
 
       const user = client.getQueryData('USER_TYPE')
+
+
     return (
         <>
 

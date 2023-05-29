@@ -16,9 +16,21 @@ export async function updateUser(req, res) {
 export async function getDonations(req, res) {
     let id = req.params.id
 
-    const response = await USERS_COLLECTION.find({"schedule.data.user.email": id}).toArray()
-
-    console.log(JSON.stringify(response))
-    res.status(200).send(response)
+    let response = await USERS_COLLECTION.find({"schedule.data.user.email": id}).toArray()
+    const novo = []
+    if(response?.length > 0){
+        response.forEach(item => {
+            item?.schedule.forEach(sc => {
+                sc?.data?.user?.email === id && novo.push({date: sc.date, hour: sc.hour, local: sc.data.local, user: sc.data.user, _id: item._id, status: sc.status})
+            })
+        })
+        novo.sort(function(a,b){
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return new Date(b.date) - new Date(a.date);
+        })
+    }
+console.log(novo)
+    res.status(200).send(novo)
 
 }

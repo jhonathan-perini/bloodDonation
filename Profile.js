@@ -90,7 +90,7 @@ if(userType?.cnpj){
         }
     }, {
         onSuccess: async() => {
-            await client.invalidateQueries(["USER_TYPE"])
+            await client.refetchQueries("USER_TYPE")
             alert('Informações atualizadas com sucesso')
         },
         onError: async() => {

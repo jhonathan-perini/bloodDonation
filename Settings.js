@@ -29,14 +29,14 @@ const [isLoading, setIsLoading] = useState(false)
     const dataPartner = [
         {key: 'Meus dados', icon: 'account', page: 'Profile' },
 
-        // {key: 'Notificações', icon: 'bell', page: 2},
+        {key: 'Notificações', icon: 'bell', page: 'Notification'},
         {key: 'Sair', icon: 'logout', action: logOut},
     ]
 
     const dataDonor = [
         {key: 'Meus dados', icon: 'account', page: 'Profile' },
         {key: 'Informações', icon: 'information-outline', page: 'Information' },
-        // {key: 'Notificações', icon: 'bell', page: 2},
+
         {key: 'Sair', icon: 'logout', action: logOut},
     ]
     return (

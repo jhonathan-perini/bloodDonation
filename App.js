@@ -11,6 +11,7 @@ import Profile from "./Profile";
 import PartnerRegistration from "./PartnerRegistrarion";
 import {QueryClient, QueryClientProvider} from "react-query";
 import Information from "./Information";
+import Notifications from "./Notifications";
 
 
 
@@ -44,6 +45,7 @@ export default function App() {
               {user ?  <><Stack.Screen name="Home" options={{headerShown: false}}  component={Tabs2} />
                     <Stack.Screen name="Profile"  options={{headerShown: true, title: 'Meus dados'}}  component={Profile} />
                     <Stack.Screen name="Information"  options={{headerShown: true, title: 'Informações'}}  component={Information} />
+                    <Stack.Screen name="Notifications"  options={{headerShown: true, title: ' Notificações'}}  component={Notifications} />
                   </>:
                   <>
                     <Stack.Screen  name="Auth" options={{headerShown: false, ...TransitionPresets.ModalTransition}} component={Auth} />

@@ -19,6 +19,7 @@ const Stack2 = createNativeStackNavigator();
 const Stack3 = createNativeStackNavigator();
 import TabContext from "./TabContext";
 import ScheduleConfirmation from "./ScheduleConfirmation";
+import Notifications from "./Notifications";
 export function Home2() {
     return (
         <Stack2.Navigator>
@@ -67,12 +68,7 @@ export function Tabs2(){
         <TabContext.Provider value={{overlay, setOverlay}} >
             {overlay &&  <Overlay/>}
         <Tab.Navigator>
-            <Tab.Screen name="Start" component={Home} options={{
-                tabBarIcon: ({ color, size }) => (
-                    <MaterialCommunityIcons name="home" color={color} size={size} />
-                ),
-                tabBarActiveTintColor: 'tomato'
-            }} />
+
             <Tab.Screen name={user?.cnpj ? "Estoque" : "Doações"}  component={user?.cnpj ? Home3 : Home2} options={{
                 tabBarIcon: ({ color, size }) => (
                     <MaterialCommunityIcons name={user?.cnpj ? "blood-bag" : "hand-heart-outline"} color={color} size={size} />
@@ -88,14 +84,23 @@ export function Tabs2(){
                 tabBarActiveTintColor: 'tomato',
                 headerShown: false
             }}/>}
-            <Tab.Screen name="Configurações"  component={Settings} options={{
+            <Tab.Screen name="Notificações"  component={Notifications} options={{
                 tabBarIcon: ({ color, size }) => (
-                    <MaterialCommunityIcons name="cog" color={color} size={size} />
+                    <MaterialCommunityIcons name="bell" color={color} size={size} />
                 ),
                 tabBarActiveTintColor: 'tomato',
                 tabBarBadge: 3,
 
             }} />
+            <Tab.Screen name="Configurações"  component={Settings} options={{
+                tabBarIcon: ({ color, size }) => (
+                    <MaterialCommunityIcons name="cog" color={color} size={size} />
+                ),
+                tabBarActiveTintColor: 'tomato',
+
+
+            }} />
+
         </Tab.Navigator>
         </TabContext.Provider>
     )

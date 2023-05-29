@@ -50,7 +50,15 @@ const [userType, setUserType] = useState('')
     }
 
 
+    function checkUserCpf(item){
+        if(userType?.cpf?.length === 11 && userType?.name?.length > 0
+            && userType?.genre?.length > 0 && userType?.bloodType?.length > 0  && userType?.bloodRh?.length > 0  ){
+            navigation.navigate('DonationSchedule', {local: item})
+        } else {
+            alert("Preencha todas as suas informações em 'Meus dados' para continuar")
+        }
 
+    }
 const [overlay, setOverlay] = useState(false)
 const [supply, setSupply] = useState({})
     return(
@@ -102,7 +110,7 @@ const [supply, setSupply] = useState({})
                 <TouchableOpacity
                 color={"#841584"}
                 style={[stylesAuth.LoginButton, {padding: 8, borderRadius: 6, width: '40%', marginRight: 6}]}
-                onPress={() => navigation.navigate('DonationSchedule', {local: item})}
+                onPress={() => checkUserCpf(item)}
                 >
                 <Text style={[stylesAuth.LoginText, {fontSize: 12}]}>Agendar doação</Text>
                 </TouchableOpacity>
