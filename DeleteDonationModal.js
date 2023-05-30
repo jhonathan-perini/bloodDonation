@@ -41,11 +41,7 @@ useEffect(() => {
     if(!(del.deleting)) setState(false)
 
 }, [del])
-    useEffect(() => {
-        if(state) context.setOverlay(true)
-        if(!state) context.setOverlay(false)
 
-    }, [state])
     return (
         <>
 

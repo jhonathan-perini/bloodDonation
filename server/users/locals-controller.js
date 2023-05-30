@@ -56,7 +56,8 @@ export async function findLocals(req, res) {
 export async function scheduleDonation(req, res){
     const schedule = req.body
     console.log(JSON.stringify(schedule))
-    await USERS_COLLECTION.updateOne({cnpj: schedule?.cnpj}, {$addToSet: {schedule: {date: schedule.selectedDate, hour: schedule.selectedTime, data: schedule.data, status: 'scheduled'}}})
+    console.log(JSON.stringify(schedule))
+    await USERS_COLLECTION.updateOne({cnpj: schedule?.cnpj}, {$addToSet: {schedule: {date: schedule.selectedDate, hour: schedule.selectedTime, data: schedule.data, status: schedule.status}}})
 
 
     res.status(200).send()

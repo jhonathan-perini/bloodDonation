@@ -19,7 +19,7 @@ const [confirmDel, setConfirmDel] = useState(null)
     const client = useQueryClient()
     const [user, setUser] = useState('')
     const [screen, setScreen] = useState(false)
-    const {data: donations} = useQuery(['USER_DONATIONS', screen], async() => {
+    const {data: donations} = useQuery(['USER_DONATIONS', screen, user], async() => {
         if(auth.currentUser){
             const response = await api.get(`/donations/${user?.email}`)
 
@@ -240,7 +240,7 @@ useEffect(() => {
 
             /></>}
 
-            />}
+
 
         </SafeAreaView>
 

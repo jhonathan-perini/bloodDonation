@@ -47,6 +47,7 @@ export default function DonationSchedule({ route, navigation }) {
       }
 const client = useQueryClient()
       const saveSchedule = useMutation(async(args) => {
+          args.status = 'scheduled'
           return await api.patch(`/schedule/${args.cnpj}`, args)
       }, {
           onSuccess: async () => {
