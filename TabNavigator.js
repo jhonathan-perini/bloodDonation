@@ -20,6 +20,7 @@ const Stack3 = createNativeStackNavigator();
 import TabContext from "./TabContext";
 import ScheduleConfirmation from "./ScheduleConfirmation";
 import Notifications from "./Notifications";
+import ScheduleLocal from "./ScheduleLocal";
 export function Home2() {
     return (
         <Stack2.Navigator>
@@ -46,8 +47,8 @@ export function Home3() {
     return (
         <Stack2.Navigator>
             <Stack2.Screen name="BloodSupply"  component={BloodSupply} />
-            <Stack2.Screen name="BeforeScheduleInfo" options={{headerShown: true}}  component={BeforeScheduleInfo} />
-            <Stack2.Screen name="DonationSchedule" options={{headerShown: true}}  component={DonationSchedule} />
+
+
         </Stack2.Navigator>
     );
 }
@@ -64,11 +65,28 @@ export function Tabs2(){
             return response.data
         }
     })
+    const {data: userNotification} = useQuery(['USER_NOTIFICATIONS2', auth.currentUser, user], async () => {
+        if(auth.currentUser){
+            const response = await api.get(`/notifications/${user?.email}`)
+            const number = response.data?.filter((item) => item?.status === 'unseen')
+
+            return number?.length || null
+
+        }
+    })
     return (
         <TabContext.Provider value={{overlay, setOverlay}} >
             {overlay &&  <Overlay/>}
         <Tab.Navigator>
+            {user?.cnpj && <Tab.Screen name="Agendamentos" component={ScheduleLocal} options={{
+                tabBarIcon: ({color, size}) => (
+                    <MaterialCommunityIcons name="calendar" color={color} size={size}/>
+                ),
+                tabBarActiveTintColor: 'tomato',
+                headerShown: true,
 
+
+            }}/>}
             <Tab.Screen name={user?.cnpj ? "Estoque" : "Doações"}  component={user?.cnpj ? Home3 : Home2} options={{
                 tabBarIcon: ({ color, size }) => (
                     <MaterialCommunityIcons name={user?.cnpj ? "blood-bag" : "hand-heart-outline"} color={color} size={size} />
@@ -84,14 +102,14 @@ export function Tabs2(){
                 tabBarActiveTintColor: 'tomato',
                 headerShown: false
             }}/>}
-            <Tab.Screen name="Notificações"  component={Notifications} options={{
+            {!user?.cnpj &&<Tab.Screen name="Notificações"  component={Notifications} options={{
                 tabBarIcon: ({ color, size }) => (
                     <MaterialCommunityIcons name="bell" color={color} size={size} />
                 ),
                 tabBarActiveTintColor: 'tomato',
-                tabBarBadge: 3,
+                tabBarBadge: userNotification || null,
 
-            }} />
+            }} />}
             <Tab.Screen name="Configurações"  component={Settings} options={{
                 tabBarIcon: ({ color, size }) => (
                     <MaterialCommunityIcons name="cog" color={color} size={size} />

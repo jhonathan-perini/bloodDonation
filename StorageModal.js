@@ -132,6 +132,14 @@ export const styles = StyleSheet.create({
         width: '100%'
 
     },
+    centeredView2: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        width: '100%'
+
+    },
     modalView: {
         margin: 20,
         backgroundColor: 'white',

@@ -1,10 +1,22 @@
-import {Button, FlatList, Keyboard, Pressable, Text, View, TouchableWithoutFeedback} from 'react-native'
+import {
+    Button,
+    FlatList,
+    Keyboard,
+    Pressable,
+    Text,
+    View,
+    TouchableWithoutFeedback,
+    TouchableOpacity, Image
+} from 'react-native'
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import React, {useEffect, useState} from "react";
 import {TextInput} from "react-native-paper";
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import api from "./api";
 import {auth} from "./firebaseConfig";
+import {stylesAuth} from "./Authentication";
+import lock from "./assets/warning4.png";
+import lock2 from "./assets/yes.png";
 
 export default function BloodSupply({navigation}){
     const bloodType = [{
@@ -107,6 +119,22 @@ export default function BloodSupply({navigation}){
         }
 
     }
+    const notifyBlood = useMutation(async(args) => {
+   await api.post(`/notifyAll`, { message: `O ${args.local} precisa da sua ajuda! Estamos com um estoque baixo de sangue tipo ${args.type}.`})
+
+    }, {
+        onSuccess: async () => {
+            alert('Aviso enviado com sucesso.')
+
+            await client.invalidateQueries('SCHEDULE_LOCAL')
+            await client.invalidateQueries('USER_DONATIONS')
+
+
+        }
+    })
+    function sendNotificationBlood(name){
+        notifyBlood.mutate({type: name, local: userType?.name})
+    }
 
     return (
 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -116,7 +144,27 @@ export default function BloodSupply({navigation}){
                   renderItem={({item}) => {
                       return (
                           <View style={{display: 'flex',paddingHorizontal: 20, height: 60, flexDirection: 'row',justifyContent: 'space-between',alignItems: 'center', borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0,0.13)', backgroundColor: 'white'}}>
+                             <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                 {qtd[item.name] < 6 && <TouchableOpacity
+                                     color={"#841584"}
+                                     style={{marginRight: 10}}
+                                     onPress={() => sendNotificationBlood(item.name)}
+                                 >
+
+                                     <Image source={lock} style={[stylesAuth.LockImage, {width: 25, height: 25}]}/>
+
+                                 </TouchableOpacity>}
+                                 {!(qtd[item.name] < 6) && <TouchableOpacity
+                                     color={"#841584"}
+                                     style={{marginRight: 10}}
+                                 >
+
+                                     <Image source={lock2} style={[stylesAuth.LockImage, {width: 25, height: 25}]}/>
+
+                                 </TouchableOpacity>}
                               <Text  > {item.name}</Text>
+
+                             </View>
                              <View style={{display:'flex', flexDirection:'row', alignItems: 'center'}}>
                                  <Pressable
                                      onPress={() => increaseQuantity(item.name)}

@@ -248,7 +248,7 @@ useEffect(() => {
     )
 }
 
-const donationStyle = StyleSheet.create({
+export const donationStyle = StyleSheet.create({
     text: {
         fontSize: 20,
         fontFamily: 'SFBold'
