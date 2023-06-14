@@ -51,8 +51,10 @@ setRefresh(false)
         } else return '0'
     }
 
-
+const donations = client.getQueryData('USER_DONATIONS')
     function checkUserCpf(item){
+        const donation = donations.find(d => d.status === 'scheduled')
+        if(donation) return alert('Você pode ter somente uma doação agendada.')
         if(userType?.cpf?.length === 11 && userType?.name?.length > 0
             && userType?.genre?.length > 0 && userType?.bloodType?.length > 0  && userType?.bloodRh?.length > 0  ){
             navigation.navigate('DonationSchedule', {local: item})
