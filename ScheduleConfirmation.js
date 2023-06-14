@@ -3,7 +3,14 @@ import cry from "./assets/blood-donation-2.png";
 import React from "react";
 import {stylesAuth} from "./Authentication";
 export default function ScheduleConfirmation({navigation}){
+function navegar(){
+    navigation.reset({
+        index: 0,
+        routes: [{ name: 'DonationLocal' }]
+    });
 
+    navigation.navigate('Donations')
+}
     return (
         <View style={{width: '100%', backgroundColor: 'rgba(255,255,255,0.55)', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <View style={{width: '90%', backgroundColor: 'white', height: '90%', display: 'flex', alignItems: 'center',justifyContent: 'center', shadowColor: '#171717',
@@ -16,7 +23,7 @@ export default function ScheduleConfirmation({navigation}){
             <Text style={{fontFamily: 'SFBold', fontSize: 30, textAlign: 'center', marginBottom: 16}}>Obrigado.</Text>
                 <TouchableOpacity
                     style={stylesAuth.LoginButton}
-onPress={() => navigation.navigate('Donations')}
+onPress={() => navegar()}
                 >
                     <Text  style={stylesAuth.LoginText}>Minhas doações</Text>
                 </TouchableOpacity>

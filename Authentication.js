@@ -228,15 +228,15 @@ export const stylesAuth = StyleSheet.create({
     LoginButton: {
         backgroundColor: "rgba(255,68,68,0.8)",
         borderRadius: 10,
-        padding: 12,
-        width: '60%',
+        padding: 4,
+        width: '50%',
         marginTop: 10
 
     },
     PartnerButton: {
         backgroundColor: "rgb(89,89,89)",
         borderRadius: 10,
-        padding: 12,
+        padding: 4,
         width: '60%',
 
 
@@ -244,7 +244,7 @@ export const stylesAuth = StyleSheet.create({
     RegisterButton: {
         backgroundColor: "#FFF",
         borderRadius: 10,
-        padding: 12,
+        padding: 4,
         width: '60%',
         marginTop: 10,
         borderWidth: 1,

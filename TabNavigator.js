@@ -40,6 +40,8 @@ export function Home4() {
 
             <Stack2.Screen name="DonationLocal" options={{headerShown: true, headerTitle: 'Postos de coleta'}}  component={Locals} />
             <Stack2.Screen name="DonationSchedule" options={{headerShown: true, headerTitle: 'Agendamento'}}  component={DonationSchedule} />
+            <Stack2.Screen name="ScheduleConfirmation" options={{headerShown: true, headerBackVisible: false, headerTitle: 'Confirmação'}}  component={ScheduleConfirmation} />
+
         </Stack2.Navigator>
     );
 }
@@ -84,7 +86,7 @@ export function Tabs2({navigation}){
     return (
         <TabContext.Provider value={{overlay, setOverlay}} >
             {overlay &&  <Overlay/>}
-        <Tab.Navigator>
+        <Tab.Navigator screenOptions={{unmountOnBlur: true }}>
             {user?.cnpj && <Tab.Screen name="Agendamentos" component={ScheduleLocal} options={{
                 tabBarIcon: ({color, size}) => (
                     <MaterialCommunityIcons name="calendar" color={color} size={size}/>
@@ -102,7 +104,7 @@ export function Tabs2({navigation}){
                 headerShown: false,
 
             }} />
-            {!user?.cnpj && <Tab.Screen name="Hemocentros" component={Home4} options={{
+            {!user?.cnpj && <Tab.Screen name="Hemocentros" component={Home4}  options={{
                 tabBarIcon: ({color, size}) => (
                     <MaterialCommunityIcons name="office-building-marker" color={color} size={size}/>
                 ),

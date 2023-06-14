@@ -74,6 +74,7 @@ const [confirmDel, setConfirmDel] = useState(null)
             alert("Preencha todas as suas informações em 'Meus dados' para continuar")        }
 
     }
+
 function startSchedule(){
         const donation = donations.find(d => d.status === 'scheduled')
     const d = getDate(true)

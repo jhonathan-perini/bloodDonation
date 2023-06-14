@@ -10,6 +10,7 @@ import war from './assets/warning2.png'
 import bloodap from './assets/blood-bag-ap.png'
 import StorageModal from "./StorageModal";
 import Overlay from "./Overlay";
+import {auth} from "./firebaseConfig";
 export function retrieveDate(item, type){
     const firstDigit = item.address.search(/\d/)
     const street = item.address.slice(0, firstDigit)
@@ -50,17 +51,36 @@ setRefresh(false)
             return item.supply[type]
         } else return '0'
     }
+    function getDate(asDate){
+        const donationDone = donations.find(d => d.status === 'done')
+        let d = new Date(donationDone?.date)
+        d.setDate(d.getDate() + 90)
 
-const donations = client.getQueryData('USER_DONATIONS')
+        return asDate ? d : d.toLocaleDateString('pt-BR')
+    }
+
     function checkUserCpf(item){
-        const donation = donations.find(d => d.status === 'scheduled')
-        if(donation) return alert('Você pode ter somente uma doação agendada.')
-        if(userType?.cpf?.length === 11 && userType?.name?.length > 0
-            && userType?.genre?.length > 0 && userType?.bloodType?.length > 0  && userType?.bloodRh?.length > 0  ){
-            navigation.navigate('DonationSchedule', {local: item})
-        } else {
-            alert("Preencha todas as suas informações em 'Meus dados' para continuar")
-        }
+        let don = null
+        let done = null
+      let d = null
+      api.get(`/donations/${auth.currentUser?.email}`).then(res => {
+         don = res?.data?.find(d => d.status === 'scheduled')
+         done = res?.data?.find(d => d.status === 'done')
+           d = new Date(done?.date)
+          d.setDate(d.getDate() + 90)
+          if(don) return alert('Você pode ter somente uma doação agendada.')
+          if (new Date(d) > new Date()) return  alert(`Você poderá agendar uma nova doação em ${d.toLocaleDateString('pt-BR')}`)
+          if(userType?.cpf?.length === 11 && userType?.name?.length > 0
+              && userType?.genre?.length > 0 && userType?.bloodType?.length > 0  && userType?.bloodRh?.length > 0  ){
+              navigation.navigate('DonationSchedule', {local: item})
+          } else {
+              alert("Preencha todas as suas informações em 'Meus dados' para continuar")
+          }
+        })
+
+
+
+
 
     }
 const [overlay, setOverlay] = useState(false)
