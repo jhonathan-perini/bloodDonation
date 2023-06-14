@@ -19,23 +19,30 @@ const [confirmDel, setConfirmDel] = useState(null)
     const client = useQueryClient()
     const [user, setUser] = useState('')
     const [screen, setScreen] = useState(false)
-    const {data: donations} = useQuery(['USER_DONATIONS', screen, user], async() => {
-        if(auth.currentUser){
-            const response = await api.get(`/donations/${user?.email}`)
+    const [refresh, setRefresh] = useState(false)
+
+    const {data: donations} = useQuery(['USER_DONATIONS', refresh], async() => {
+        if(auth.currentUser?.email){
+
+            const response = await api.get(`/donations/${auth.currentUser?.email}`)
+
+            setRefresh(false)
 
             return response.data
         }
     })
+
     React.useEffect(() => {
         // Return the function to unsubscribe from the event so it gets removed on unmount
         return navigation.addListener('focus', () => {
             // The screen is focused
 
            setScreen(!screen)
+            client.refetchQueries('USER_TYPE')
             setUser(client.getQueryData('USER_TYPE'))
 
         });
-    }, [navigation]);
+    }, [navigation, auth]);
 
 
 
@@ -88,7 +95,7 @@ useEffect(() => {
 }, [confirmDel])
     return(
         <>
-        <SafeAreaView style={[donations?.length === 0 && ST.centeredView,{backgroundColor: 'white', width: '100%', height: '100%'}]}>
+        <SafeAreaView style={[donations?.length === 0 && ST.centeredView,{backgroundColor: 'white', width: '100%', height: '100%'}]}   >
 
             {donations?.length > 0 &&
                 <TouchableOpacity
@@ -96,9 +103,10 @@ useEffect(() => {
                     onPress={startSchedule}
                     style={[stylesAuth.LoginButton, {
                         padding: 10,
-                        borderRadius: '50%',
-                        width: 50,
+                        borderRadius: 80,
+                       width: 50,
                         height: 50,
+
                         backgroundColor: '#da1111',
                         marginRight: 10,
                         marginBottom: 10,
@@ -111,7 +119,7 @@ useEffect(() => {
                         zIndex: 10
                     }]}
                 >
-                    <Text style={[stylesAuth.LoginText, {fontSize: 24}]}>+</Text>
+                    <Text style={[stylesAuth.LoginText, {fontSize: 20, position: 'absolute', }]}>+</Text>
                 </TouchableOpacity>
          }
 
@@ -155,7 +163,8 @@ useEffect(() => {
 
             <FlatList
                 contentContainerStyle={{alignSelf: 'flex-start', width: '100%'}}
-
+                onRefresh={() => setRefresh(true)}
+                refreshing={refresh}
                 data={donations}
                 renderItem={({item, index}) => {
                     return <ScrollView>
@@ -166,6 +175,7 @@ useEffect(() => {
                                     <View  style={{shadowColor: '#171717',
                                         shadowOffset: {width: -1, height: 0},
                                         shadowOpacity: 0.2,
+                                        elevation: 2,
                                         shadowRadius: 3, backgroundColor: '#FFF', borderRadius: 10, padding: 10, width: '95%', marginVertical: 10, alignSelf: 'center'}}>
                                         <View style={{display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', borderRadius: 50,
                                             backgroundColor: item?.status === 'scheduled' ? 'rgba(227,184,46,0.85)' : '#14bd2e', width: '20%'

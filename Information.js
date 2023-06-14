@@ -45,9 +45,10 @@ export default function Information(){
         <SafeAreaView style={{backgroundColor: 'white'}}>
         <ScrollView style={{paddingRight: 20, paddingLeft: 10, backgroundColor: 'white'}}>
             <Text style={[stylesAuth.RegisterText, {marginVertical: 10}]}>Para a doação de sangue, é preciso atender alguns critérios.</Text>
-            <View style={{backgroundColor: 'white', borderRadius: 10, padding: 10 ,   shadowColor: '#171717',
+            <View style={{backgroundColor: 'white', borderRadius: 10, padding: 10 ,  shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.15,
+                elevation: 2,
                 shadowRadius: 3, }}>
             <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <Image source={checkMark} style={{width: 20, height: 20, marginRight: 5}}/>
@@ -66,6 +67,7 @@ export default function Information(){
             <View style={{backgroundColor: 'white', borderRadius: 10, padding: 10 , marginBottom:10,  shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.15,
+                elevation: 2,
                 shadowRadius: 3, }}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                     <Image source={warning} style={{width: 20, height: 20, marginRight: 5}}/>
@@ -83,8 +85,9 @@ export default function Information(){
             <View style={{backgroundColor: 'white', borderRadius: 10, padding: 10 ,   shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.15,
+                elevation: 2,
                 shadowRadius: 3, }}>
-            <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', }}>
                 <Image source={block} style={{width: 20, height: 20, marginRight: 5}}/>
                 <Text style={[stylesAuth.RegisterText, {marginVertical: 10,color: 'black'}]}>Impedimentos definitivos</Text>
             </View>

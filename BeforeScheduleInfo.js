@@ -47,6 +47,7 @@ export default function BeforeScheduleInfo({navigation}){
             <View style={{backgroundColor: 'white', borderRadius: 10, padding: 10 ,   shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.15,
+                elevation: 2,
                 shadowRadius: 3, }}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                     <Image source={checkMark} style={{width: 20, height: 20, marginRight: 5}}/>
@@ -65,6 +66,7 @@ export default function BeforeScheduleInfo({navigation}){
             <View style={{backgroundColor: 'white', borderRadius: 10, padding: 10 , marginBottom:10,  shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.15,
+                elevation: 2,
                 shadowRadius: 3, }}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                     <Image source={warning} style={{width: 20, height: 20, marginRight: 5}}/>
@@ -82,6 +84,7 @@ export default function BeforeScheduleInfo({navigation}){
             <View style={{backgroundColor: 'white', borderRadius: 10, padding: 10 ,   shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.15,
+
                 shadowRadius: 3, }}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                     <Image source={block} style={{width: 20, height: 20, marginRight: 5}}/>

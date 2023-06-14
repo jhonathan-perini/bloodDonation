@@ -2,7 +2,7 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import Home from './MainScreen'
 import Settings from "./Settings";
 import Locals from "./Locals";
-import {useQuery} from "react-query";
+import {useQuery, useQueryClient} from "react-query";
 import {auth} from "./firebaseConfig";
 import api from "./api";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -12,7 +12,7 @@ import Donations from "./Donations";
 import BeforeScheduleInfo from "./BeforeScheduleInfo";
 import DonationSchedule from "./DonationSchedule";
 import BloodSupply from "./BloodSupply";
-import React, {createContext, useContext, useState} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import Overlay from "./Overlay";
 const Tab = createBottomTabNavigator();
 const Stack2 = createNativeStackNavigator();
@@ -22,13 +22,14 @@ import ScheduleConfirmation from "./ScheduleConfirmation";
 import Notifications from "./Notifications";
 import ScheduleLocal from "./ScheduleLocal";
 export function Home2() {
+
     return (
         <Stack2.Navigator>
             <Stack2.Screen name="Donations" options={{headerLargeTitle: true, headerShadowVisible: false, headerTitle: 'Minhas doações'}} component={Donations} />
-            <Stack2.Screen name="BeforeScheduleInfo" options={{headerShown: true}}  component={BeforeScheduleInfo} />
-            <Stack2.Screen name="DonationLocal" options={{headerShown: true}}  component={Locals} />
-            <Stack2.Screen name="DonationSchedule" options={{headerShown: true}}  component={DonationSchedule} />
-            <Stack2.Screen name="ScheduleConfirmation" options={{headerShown: true, headerBackVisible: false}}  component={ScheduleConfirmation} />
+            <Stack2.Screen name="BeforeScheduleInfo" options={{headerShown: true, headerTitle: 'Informações'}}  component={BeforeScheduleInfo} />
+            <Stack2.Screen name="DonationLocal" options={{headerShown: true, headerTitle: 'Postos de coleta'}}  component={Locals} />
+            <Stack2.Screen name="DonationSchedule" options={{headerShown: true, headerTitle: 'Agendamento'}}  component={DonationSchedule} />
+            <Stack2.Screen name="ScheduleConfirmation" options={{headerShown: true, headerBackVisible: false, headerTitle: 'Confirmação'}}  component={ScheduleConfirmation} />
         </Stack2.Navigator>
     );
 }
@@ -37,8 +38,8 @@ export function Home4() {
     return (
         <Stack2.Navigator>
 
-            <Stack2.Screen name="DonationLocal" options={{headerShown: true}}  component={Locals} />
-            <Stack2.Screen name="DonationSchedule" options={{headerShown: true}}  component={DonationSchedule} />
+            <Stack2.Screen name="DonationLocal" options={{headerShown: true, headerTitle: 'Postos de coleta'}}  component={Locals} />
+            <Stack2.Screen name="DonationSchedule" options={{headerShown: true, headerTitle: 'Agendamento'}}  component={DonationSchedule} />
         </Stack2.Navigator>
     );
 }
@@ -46,7 +47,7 @@ export function Home4() {
 export function Home3() {
     return (
         <Stack2.Navigator>
-            <Stack2.Screen name="BloodSupply"  component={BloodSupply} />
+            <Stack2.Screen name="BloodSupply" options={{headerTitle: 'Bolsas'}}  component={BloodSupply} />
 
 
         </Stack2.Navigator>
@@ -55,12 +56,16 @@ export function Home3() {
 
 
 
-export function Tabs2(){
+export function Tabs2({navigation}){
     const [overlay,setOverlay] = useState()
+
+
     const {data: user} = useQuery(["USER_TYPE"], async() => {
+
         if(auth.currentUser?.email) {
 
             const response = await api.get(`/find-user/${auth.currentUser.email}` )
+
 
             return response.data
         }
@@ -74,6 +79,8 @@ export function Tabs2(){
 
         }
     })
+
+
     return (
         <TabContext.Provider value={{overlay, setOverlay}} >
             {overlay &&  <Overlay/>}

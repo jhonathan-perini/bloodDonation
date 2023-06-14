@@ -20,7 +20,9 @@ import {StatusBar} from "expo-status-bar";
 
 const queryClient = new QueryClient()
 const Stack = createNativeStackNavigator();
+import { LogBox } from 'react-native';
 
+LogBox.ignoreAllLogs();//Ignore all log notifications
 export default function App() {
   const [user, setUser] = useState(null)
   const [fontsLoaded] = useFonts({
@@ -35,6 +37,7 @@ export default function App() {
   auth.onAuthStateChanged((user) => {
     if (user) {
       setUser(user)
+
     } else {
       setUser(null)
     }

@@ -13,8 +13,8 @@ const [isLoading, setIsLoading] = useState(false)
     setIsLoading(true)
         auth.signOut().then(res => {
             setIsLoading(false)
-            client.invalidateQueries(['USER_TYPE'])
-            client.invalidateQueries(['USER_SUPPLY'])
+            client.removeQueries(['USER_TYPE'])
+            client.removeQueries(['USER_SUPPLY'])
         }).catch(err => {
             alert(JSON.stringify(err))
             setIsLoading(false)

@@ -155,25 +155,14 @@ if(userType?.cnpj){
             {saveInfo.isLoading &&  <ActivityIndicator size="large" style={{position: 'absolute', alignSelf:'center', top: '40%', zIndex: 3}} color="#000" />}
         <ScrollView contentContainerStyle={{ display: 'flex', alignItems: 'center'}} >
 
-            <Image source={{uri: image || 'https://s2.glbimg.com/1o2J-rf2G9qtlQlm82gaq-mFBec=/0x129:1024x952/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/7/i/ME2AxRRoygUyFPCDe0jQ/3.png'}} style={{width: 100,
-                height: 100,
-                alignSelf: "center",
-                borderRadius: 300,
-                marginTop: 20,
-                marginBottom: 10
-                }}/>
-            <TouchableOpacity
 
-                color={"#841584"}
-    onPress={pickImage}
-            >
-                <Text style={{color: 'tomato', marginBottom: 25}}>Alterar</Text>
-            </TouchableOpacity>
+
             <TextInput
                 theme={{ colors: { onSurface: "black"}}} mode="outlined"
                 style={{ height: 50,
                     marginBottom: 12,
                     borderWidth: 0,
+                    marginTop: 20,
                     padding: 10,
                     borderRadius: 10,
                     backgroundColor: "#00000010",

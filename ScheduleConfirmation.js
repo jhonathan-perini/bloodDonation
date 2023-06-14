@@ -9,6 +9,7 @@ export default function ScheduleConfirmation({navigation}){
             <View style={{width: '90%', backgroundColor: 'white', height: '90%', display: 'flex', alignItems: 'center',justifyContent: 'center', shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.2,
+                elevation: 2,
                 shadowRadius: 3, borderRadius: 20}}>
             <Image source={cry} style={{width: 220, height: 220, marginTop: '10%', marginBottom: '5%'}}/>
             <Text style={{fontFamily: 'SFLight', fontSize: 30, textAlign: 'center', marginBottom: 16}}>Você é o tipo certo para alguém!</Text>

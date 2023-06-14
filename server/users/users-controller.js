@@ -42,7 +42,7 @@ export async function getDonationsLocal(req, res) {
     const novo = []
     if(response?.length > 0){
         response.forEach(item => {
-            item?.schedule.forEach(sc => {
+            item?.schedule?.forEach(sc => {
                 novo.push({date: sc.date, hour: sc.hour, local: sc.data.local, user: sc.data.user, _id: item._id, status: sc.status})
             })
         })

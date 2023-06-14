@@ -9,6 +9,12 @@ export async function createUser(req, res) {
 
 }
 
+export async function deleteUser(req, res) {
+    await USERS_COLLECTION.deleteOne(req.body)
+    res.status(200).send()
+
+}
+
 export async function findPartner(req, res) {
     const cnpj = req.params.id.trim()
    const response =  await USERS_COLLECTION.findOne({cnpj})

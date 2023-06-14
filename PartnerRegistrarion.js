@@ -47,11 +47,15 @@ const {mutate: createPartner, isLoading: isLoadingCreatePartner} = useMutation(a
        alert('Este CNPJ já está em uso.')
     } else {
         try{
+            await api.post('/create-partner', {email, cnpj})
+
             const user = await createUserWithEmailAndPassword(auth, email, password)
-            return api.post('/create-partner', {email, cnpj})
+
+
         } catch (err){
             const errorCode = err.code;
             const errorMessage = err.message;
+            await api.post('/delete-partner', {email, cnpj})
            alert(verifyErrorCode(errorCode))
         }
     }
@@ -60,6 +64,7 @@ const {mutate: createPartner, isLoading: isLoadingCreatePartner} = useMutation(a
 
 
 })
+
     function registerPartner(){
         const validations = Object.keys(errors)?.map(key => errors[key] ? 1 : 0).reduce((prev, curr) => prev + curr)
 

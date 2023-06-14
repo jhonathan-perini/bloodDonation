@@ -13,12 +13,14 @@ import Overlay from "./Overlay";
 export function retrieveDate(item, type){
     const firstDigit = item.address.search(/\d/)
     const street = item.address.slice(0, firstDigit)
+
+
     const number = item.address.slice(firstDigit).replace(' ', '˜').split('˜')
     return type === 'street' ? `${street}, ${number[0]}` : `${number[1]}`
 }
 export default function Locals({navigation}){
     const client = useQueryClient()
-
+    const [refresh, setRefresh] = useState(false)
 const [userType, setUserType] = useState('')
 
     useEffect(() => {
@@ -35,10 +37,10 @@ const [userType, setUserType] = useState('')
         });
     }, [navigation]);
 
-    const {data: matrix} = useQuery(["USER_MATRIX", userType], async () => {
+    const {data: matrix} = useQuery(["USER_MATRIX", userType, refresh], async () => {
         if(userType?.street?.length > 0 ){
                 const response = await api.post(`/locals`, userType)
-
+setRefresh(false)
             return  response.data
         }
     })
@@ -75,11 +77,14 @@ const [supply, setSupply] = useState({})
                 <FlatList
                 data={matrix}
                 style={{width: '100%'}}
+                onRefresh={() => setRefresh(true)}
+                refreshing={refresh}
                 renderItem={({item}) => {
                 return (
                 <View style={{shadowColor: '#171717',
                 shadowOffset: {width: -1, height: 0},
                 shadowOpacity: 0.2,
+                    elevation: 2,
                 shadowRadius: 3, backgroundColor: '#FFF', borderRadius: 10, padding: 10, width: '95%', marginVertical: 10, alignSelf: 'center'}}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>

@@ -1,4 +1,6 @@
-import {ActivityIndicator, FlatList, SafeAreaView, Text, TouchableOpacity, View,} from "react-native";
+import {ActivityIndicator, FlatList, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import { ScrollView } from 'react-native-virtualized-view'
+
 import {Calendar} from "react-native-calendars";
 import React, {useContext, useEffect, useState} from "react";
 import {LocaleConfig} from "react-native-calendars/src/index";
@@ -125,7 +127,7 @@ const {data: scheduleLocal} = useQuery(['SCHEDULE_LOCAL'], async() => {
 
 
 
-      <SafeAreaView
+      <ScrollView
         style={{ backgroundColor: "white", width: "100%", height: "100%" }}
       >
           {saveSchedule.isLoading &&  <ActivityIndicator size="large" style={{position: 'absolute', alignSelf:'center', top: '40%', zIndex: 3}} color="#000" />}
@@ -171,6 +173,7 @@ const {data: scheduleLocal} = useQuery(['SCHEDULE_LOCAL'], async() => {
                     style={{fontFamily: 'SFBold', fontSize: 24, textAlign: 'center', marginVertical: 16}}>
                     Agora o horário
                 </Text>
+
                 <FlatList
                     contentContainerStyle={{alignSelf: 'flex-start', width: '100%'}}
                     numColumns={numColumns}
@@ -202,6 +205,7 @@ const {data: scheduleLocal} = useQuery(['SCHEDULE_LOCAL'], async() => {
                 />
 
 
+
             </View>}
           <TouchableOpacity
             style={{
@@ -223,7 +227,7 @@ const {data: scheduleLocal} = useQuery(['SCHEDULE_LOCAL'], async() => {
           </TouchableOpacity>
         </View>
 
-      </SafeAreaView>
+      </ScrollView>
             </>
     );
   }
