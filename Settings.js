@@ -29,7 +29,7 @@ const [isLoading, setIsLoading] = useState(false)
     const dataPartner = [
         {key: 'Meus dados', icon: 'account', page: 'Profile' },
 
-        {key: 'Notificações', icon: 'bell', page: 'Notification'},
+
         {key: 'Sair', icon: 'logout', action: logOut},
     ]
 

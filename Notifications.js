@@ -19,6 +19,7 @@ export default function Notifications({navigation}){
         const response = await api.get(`/notifications/${user?.email}`)
 
             setRefresh(false)
+           if(response.data?.length === 0) return []
             return response.data.sort(function(a,b){
                 // Turn your strings into dates, and then subtract them
                 // to get a value that is either negative, positive, or zero.
@@ -53,7 +54,7 @@ function changeNotificationStatus(id){
 }
     return(
         <SafeAreaView style={{height: '100%', backgroundColor: 'white', display: 'flex', justifyContent: 'center'}}>
-            {userNotification?.length !== 0 &&   <FlatList
+            {userNotification?.length > 0  &&   <FlatList
                 contentContainerStyle={{alignSelf: 'flex-start', width: '100%'}}
                 onRefresh={() => setRefresh(true)}
                 refreshing={refresh}
@@ -97,7 +98,7 @@ function changeNotificationStatus(id){
                 }}
 
             />}
-            {userNotification?.length === 0 &&<Text style={{textAlign: 'center', color: '#808080'}}>Você não possui nenhuma notificação</Text>}
+            {userNotification?.length <= 0 &&<Text style={{textAlign: 'center', color: '#808080'}}>Você não possui nenhuma notificação</Text>}
         </SafeAreaView>
     )
 }
